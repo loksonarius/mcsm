@@ -38,7 +38,10 @@ func Execute(version, commit string) {
 	}
 
 	if f, ok := commands[command]; ok {
-		f.Exec(args...)
+		if err := f.Exec(args...); err != nil {
+			fmt.Printf("error: %s\n", err)
+			os.Exit(1)
+		}
 	} else {
 		fmt.Printf("%s is not a valid subcommand!\n", command)
 		os.Exit(1)

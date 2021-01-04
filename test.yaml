@@ -1,0 +1,16 @@
+---
+install:
+  kind: vanilla
+  version: "1.16.3"
+  mods: []
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+config:
+  vanilla:
+  spigot:
+  bukkit:
+  bedrock:
+

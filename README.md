@@ -10,6 +10,9 @@ anyone* :warning:
 
 ## Install
 
+*Out of date -- shouldn't really install locally on dev machines, see `just
+--list` for actual tasks*
+
 The [just](https://github.com/casey/just) CLI is used to tasks, to install run
 the following:
 
@@ -23,22 +26,6 @@ loksonarius-dev
 
 ## Server Definition Spec
 
-```yaml
-install:
-  type: (forge, vanilla, spigot, bedrock)
-  version: <X.Y.Z>
-  mods: [ source: (<URL>|<FS PATH>) ]
-  plugins: [ source: (<URL>|<FS PATH>) ]
-
-run:
-  initial_memory: <Mem>
-  max_memory: <Mem>
-  debug_gc: <Bool>
-
-config:
-  vanilla:
-  spigot:
-  bukkit:
-  bedrock:
-  forge:
-```
+*Will be defined and documented in ref wiki pages*
+*Will be needing a decent suite of default server definitions to integration
+test*

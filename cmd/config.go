@@ -1,31 +1,31 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/loksonarius/mcsm/pkg/server"
 )
 
-var runCmd = Cmd{
-	Name:    "run",
-	Summary: "run the current directory's Minecraft server",
+var configCmd = Cmd{
+	Name:    "config",
+	Summary: "Print the parsed server definition",
 	Exec: func(args ...string) error {
 		def, err := server.DefinitionFromPath("./test.yaml")
 		if err != nil {
 			return err
 		}
 
-		srv, err := server.GetServer(def)
+		out, err := json.MarshalIndent(def, "", "\t")
 		if err != nil {
 			return err
 		}
 
-		if err := srv.Configure(); err != nil {
-			return err
-		}
-
-		return srv.Run()
+		fmt.Println(string(out))
+		return nil
 	},
 }
 
 func init() {
-	registerSubcommand(runCmd)
+	registerSubcommand(configCmd)
 }

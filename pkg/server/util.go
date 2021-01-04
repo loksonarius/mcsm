@@ -1,0 +1,135 @@
+package server
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strconv"
+)
+
+func downloadFileToPath(downloadURL, path string) error {
+	path, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+
+	parsedUrl, err := url.Parse(downloadURL)
+	if err != nil {
+		return err
+	}
+
+	out, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	resp, err := http.Get(parsedUrl.String())
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(out, resp.Body)
+	return err
+}
+
+func javaArgs(jarPath string, ro RuntimeOpts) []string {
+	args := make([]string, 0)
+
+	args = append(args, fmt.Sprintf("-Xms%s", ro.InitialMemory))
+	args = append(args, fmt.Sprintf("-Xmx%s", ro.MaxMemory))
+
+	// aikar's flags
+	// https://aikar.co/2018/07/02/tuning-the-jvm-g1gc-garbage-collector-flags-for-minecraft/
+	args = append(args, "-XX:+UseG1GC")
+	args = append(args, "-XX:+ParallelRefProcEnabled")
+	args = append(args, "-XX:MaxGCPauseMillis=200")
+	args = append(args, "-XX:+UnlockExperimentalVMOptions")
+	args = append(args, "-XX:+DisableExplicitGC")
+	args = append(args, "-XX:+AlwaysPreTouch")
+
+	if ro.MaxMemory > 12*Gigabyte {
+		args = append(args, "-XX:G1NewSizePercent=40")
+		args = append(args, "-XX:G1MaxNewSizePercent=50")
+		args = append(args, "-XX:G1HeapRegionSize=16M")
+		args = append(args, "-XX:G1ReservePercent=15")
+		args = append(args, "-XX:InitiatingHeapOccupancyPercent=20")
+	} else {
+		args = append(args, "-XX:G1NewSizePercent=30")
+		args = append(args, "-XX:G1MaxNewSizePercent=40")
+		args = append(args, "-XX:G1HeapRegionSize=8M")
+		args = append(args, "-XX:G1ReservePercent=20")
+		args = append(args, "-XX:InitiatingHeapOccupancyPercent=15")
+
+	}
+
+	args = append(args, "-XX:G1HeapWastePercent=5")
+	args = append(args, "-XX:G1MixedGCCountTarget=4")
+	args = append(args, "-XX:G1MixedGCLiveThresholdPercent=90")
+	args = append(args, "-XX:G1RSetUpdatingPauseTimePercent=5")
+	args = append(args, "-XX:SurvivorRatio=32")
+	args = append(args, "-XX:+PerfDisableSharedMem")
+	args = append(args, "-XX:MaxTenuringThreshold=1")
+	args = append(args, "-Dusing.aikars.flags=https://mcflags.emc.gs")
+	args = append(args, "-Daikars.new.flags=true")
+
+	if ro.DebugGC {
+		maj, min, _ := javaVersion()
+		if maj == 1 && min >= 8 && min <= 10 { // java 1.8-1.10
+			args = append(args, "-Xloggc:gc.log")
+			args = append(args, "-verbose:gc")
+			args = append(args, "-XX:+PrintGCDetails")
+			args = append(args, "-XX:+PrintGCDateStamps")
+			args = append(args, "-XX:+PrintGCTimeStamps")
+			args = append(args, "-XX:+UseGCLogFileRotation")
+			args = append(args, "-XX:NumberOfGCLogFiles=5")
+			args = append(args, "-XX:GCLogFileSize=1M")
+		} else if maj == 1 && min >= 11 { // java 1.11+
+			args = append(args, "-Xlog:gc*:logs/gc.log:time,uptime:filecount=5,filesize=1M")
+		} else {
+			// I ain't got no clue, check aikar's blog
+		}
+	}
+
+	args = append(args, "-jar", jarPath)
+	args = append(args, "nogui")
+
+	return args
+}
+
+func javaVersion() (major, minor, patch int) {
+	// if java isn't installed, w.e, something else'll surely break anyway
+	path, err := exec.LookPath("java")
+	if err != nil {
+		return
+	}
+
+	cmd := exec.Command(path, "-version")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return
+	}
+
+	// this is tailor written expecting openjdk -- I ain't about to license
+	// Oracle stuff to find a version string format :\
+	re := regexp.MustCompile(`openjdk version "(?P<major>\d+).(?P<minor>\d+).(?P<patch>\d+)"`)
+	if !re.Match(out) {
+		return
+	}
+
+	matches := re.FindStringSubmatch(string(out))
+	if len(matches) != 4 {
+		return
+	}
+
+	major, _ = strconv.Atoi(matches[1])
+	minor, _ = strconv.Atoi(matches[2])
+	patch, _ = strconv.Atoi(matches[3])
+	return
+}
