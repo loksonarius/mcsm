@@ -22,7 +22,7 @@ func Marshal(i interface{}) []byte {
 		typeField := v.Type().Field(i)
 		kind := typeField.Type.Kind()
 		tag := typeField.Tag.Get(tagName)
-		if tag == "" || tag == "-" {
+		if tag == "" {
 			continue
 		}
 
@@ -54,21 +54,33 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 	properties := asStringMap(dict)
 
 	v := reflect.ValueOf(target)
-	if v.Kind() == reflect.Ptr {
-		v = reflect.Indirect(v)
+	for v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		v = v.Elem()
 	}
 
+	if v.Kind() != reflect.Struct {
+		return
+	}
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
-		if !field.IsValid() {
+		if !field.IsValid() || !field.CanSet() {
 			continue
 		}
 
 		typeField := v.Type().Field(i)
 		key, def := getFieldKeyAndDefault(typeField)
+		tag := typeField.Tag.Get(tagName)
+		if tag == "" {
+			continue
+		}
 
 		var value interface{}
 		value, valueFound := properties[key]
+
+		// no default, no value, just leave it alone
+		if !valueFound && field.Kind() != reflect.String && def == "" {
+			continue
+		}
 
 		switch field.Kind() {
 		case reflect.String:
@@ -83,7 +95,12 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 					value = v
 				}
 			}
-			field.SetInt(value.(int64))
+			switch value.(type) {
+			case int64:
+				field.SetInt(value.(int64))
+			default:
+				field.SetInt(int64(value.(int)))
+			}
 		case reflect.Uint, reflect.Uint8, reflect.Uint16,
 			reflect.Uint32, reflect.Uint64:
 			if !valueFound {
@@ -91,7 +108,16 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 					value = v
 				}
 			}
-			field.SetUint(value.(uint64))
+			switch value.(type) {
+			case uint64:
+				field.SetUint(value.(uint64))
+			case int, int8, int16, int32:
+				field.SetUint(uint64(value.(int)))
+			case int64:
+				field.SetUint(uint64(value.(int64)))
+			default:
+				field.SetUint(uint64(value.(uint)))
+			}
 		case reflect.Bool:
 			if !valueFound {
 				if v, err := strconv.ParseBool(def); err == nil {

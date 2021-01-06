@@ -13,17 +13,12 @@ func asStringMap(c config.ConfigDict) map[string]interface{} {
 	m := make(map[string]interface{})
 
 	for k, v := range c {
-		switch k.(type) {
-		case string:
-			s, ok := k.(string)
-			if !ok {
-				continue
-			}
-
-			m[s] = v
-		default:
+		s, ok := k.(string)
+		if !ok {
 			continue
 		}
+
+		m[s] = v
 	}
 
 	return m
@@ -31,8 +26,8 @@ func asStringMap(c config.ConfigDict) map[string]interface{} {
 
 func toPropertiesKey(s string) string {
 	result := ""
-	for _, c := range s {
-		if unicode.IsUpper(c) {
+	for i, c := range s {
+		if unicode.IsUpper(c) && i > 0 {
 			result += "-"
 		}
 		result += string(c)
