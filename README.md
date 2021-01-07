@@ -5,10 +5,6 @@ _Consolidate Minecraft server operations_
 :warning: *This project is too early in development to be of any practical use to
 anyone* :warning:
 
-contributing
-delevopment
-user guides
-
 ## Features
 
 ### Create fresh server installations
