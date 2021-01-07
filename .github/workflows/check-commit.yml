@@ -2,18 +2,29 @@
 name: check-commit
 on: [push]
 jobs:
-  run-general-checks:
+  run-code-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/mcsm-task
+      - uses: extractions/setup-just@v1
+      - uses: actions/setup-go@v2
         with:
-          task: check
-  get-code-coverage-checks:
+          go-version: '1.15.2'
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '13'
+          java-package: jre
+      - run: just check
+  get-coverage-report:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/mcsm-task
+      - uses: extractions/setup-just@v1
+      - uses: actions/setup-go@v2
         with:
-          task: coverage
-          args: no
+          go-version: '1.15.2'
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '13'
+          java-package: jre
+      - run: just coverage no
