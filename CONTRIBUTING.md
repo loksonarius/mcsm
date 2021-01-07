@@ -101,7 +101,7 @@ with automated test runs to submitting a Pull Request with code changes.
 
 The following utilites are required for local development:
 
-- [go 1.15+](https://golang.org)
+- [go](https://golang.org)
 - [Docker](https://docs.docker.com/get-docker/)
 - [just](https://github.com/casey/just)
 - [jq](https://stedolan.github.io/jq/)
