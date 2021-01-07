@@ -1,24 +1,17 @@
-FROM openjdk:8u212-jre-alpine
+FROM alpine:3.12
 
 RUN apk -U --no-cache upgrade && \
   apk -U --no-cache add \
     bash \
     curl \
     jq \
+    openjdk11 \
     openssl \
     vim \
     wget
 
 RUN mkdir /tests
 WORKDIR /tests
-
-ENV USER=minecraft
-ENV GROUP=minecraft
-
-RUN addgroup -S ${USER} && adduser -S ${USER} -G ${USER} && \
-  chown -R ${USER}:${USER} /tests
-USER ${USER}
-
 VOLUME /tests
 
 EXPOSE 25565

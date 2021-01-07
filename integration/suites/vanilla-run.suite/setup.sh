@@ -19,4 +19,4 @@ function runAndStopServer {
 }
 export -f runAndStopServer
 
-timeout -t 90 bash -c runAndStopServer
+timeout 90 bash -c runAndStopServer
