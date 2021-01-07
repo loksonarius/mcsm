@@ -79,21 +79,31 @@ configuration management solutions.
 _There is currently no pipeline in place, so installation requires cloning and
 building locally_
 
-### Binaries
+### Pre-Compiled Binaries
 
 _TBA_
 
-### Brew
-
-_TBA_
-
-### Snap
-
-_TBA_
 
 ### Go
 
 _TBA_
+For local system use, run the following from the root of the repo:
+
+```bash
+# install CLI built for local system -- requires $GOPATH/bin in $PATH
+go install
+```
+
+To build binaries for supported Linux systems, use the `just build` task (ref:
+[contribution docs](CONTRIBUTING.md)) to run the needed compile steps:
+
+```bash
+# compile various Linux binaries
+just build
+
+# install a specific one for system-wide use
+cp build/mcsm-linux-amd64 /usr/local/bin/mcsm
+```
 
 ## User Guide
 
