@@ -43,15 +43,18 @@ these, as of right now, this project has none. As the project grows and the need
 for asynchronous topical chat increasse, we'll re-evaluate the need if/when the
 time comes.
 
-For now, please submit your question as an issue on [our
-board](https://github.com/loksonarius/mcsm/issues) using the `Question` issue
-template. At the very least, this will allow common question patterns and needs
-to be identified over time, so please don't hesitate to ask!
+For now, please [submit your question as an
+issue](https://github.com/loksonarius/mcsm/issues/new?assignees=&labels=question&template=general-question.md&title=)
+on our board. At the very least, this will allow common question patterns and
+needs to be identified over time, so please don't hesitate to ask!
 
 ### Submit a feature request or bug report
 
 This is one of the easier contributions to make and can be done straight from
-[our issues board](https://github.com/loksonarius/mcsm/issues)!
+our issues page:
+
+- [Submit new Bug Report](https://github.com/loksonarius/mcsm/issues/new?assignees=&labels=bug&template=bug_report.md&title=)
+- [Submit new Feature Request](https://github.com/loksonarius/mcsm/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=)
 
 Before submittin a new issue, please try searching through both [open _and_
 closed Issues and Pull Requests](https://github.com/loksonarius/mcsm/issues?q=)
