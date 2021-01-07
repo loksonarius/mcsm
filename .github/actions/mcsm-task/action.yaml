@@ -1,0 +1,21 @@
+---
+name: 'Run mcsm Just Task'
+author: '@loksonarius'
+description: 'Run a just task with all mcsm dev dependencies installed'
+branding:
+  icon: 'terminal'
+  color: 'purple'
+inputs:
+  task:
+    description: 'Name of task to actually run'
+    required: true
+    default: 'check'
+  args:
+    description: 'Argument to pass in to task -- if any'
+    required: false
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.task }}
+    - ${{ inputs.args }}

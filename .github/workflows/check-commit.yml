@@ -1,0 +1,19 @@
+---
+name: check-commit
+on: [push]
+jobs:
+  run-general-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/mcsm-task
+        with:
+          task: check
+  get-code-coverage-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/mcsm-task
+        with:
+          task: coverage
+          args: no
