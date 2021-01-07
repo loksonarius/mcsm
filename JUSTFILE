@@ -27,8 +27,8 @@ test:
   ./scripts/test.sh
 
 # Generates a test coverage report
-coverage:
-  ./scripts/coverage.sh
+coverage open_browser="yes":
+  ./scripts/coverage.sh {{open_browser}}
 
 _build_integration_image: build
   ./scripts/build_integration_image.sh
