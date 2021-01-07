@@ -1,3 +1,4 @@
+export GO111MODULE := "on"
 export BINARY := "mcsm"
 export VERSION := `test -z ${CI:-""} && echo "${USER:-'userless'}-dev" || git describe --always --abbrev=0 --dirty --tags`
 export COMMIT := `git describe --always --abbrev=0 || echo "commit-less"`
