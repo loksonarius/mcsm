@@ -9,22 +9,19 @@ RUN apk -U --no-cache upgrade && \
     vim \
     wget
 
-RUN mkdir /server /server-defs
-WORKDIR /server
+RUN mkdir /tests
+WORKDIR /tests
 
 ENV USER=minecraft
 ENV GROUP=minecraft
 
 RUN addgroup -S ${USER} && adduser -S ${USER} -G ${USER} && \
-  chown -R ${USER}:${USER} /server
+  chown -R ${USER}:${USER} /tests
 USER ${USER}
 
-ARG MCSM_BIN=build/mcsm-linux-amd64
-COPY ${MCSM_BIN} /usr/local/bin/mcsm
-
-VOLUME /server-defs
+VOLUME /tests
 
 EXPOSE 25565
 EXPOSE 25575
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["/tests/suite.sh"]

@@ -5,24 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"unicode"
-
-	"github.com/loksonarius/mcsm/pkg/config"
 )
-
-func asStringMap(c config.ConfigDict) map[string]interface{} {
-	m := make(map[string]interface{})
-
-	for k, v := range c {
-		s, ok := k.(string)
-		if !ok {
-			continue
-		}
-
-		m[s] = v
-	}
-
-	return m
-}
 
 func toPropertiesKey(s string) string {
 	result := ""

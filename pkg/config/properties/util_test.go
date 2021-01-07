@@ -1,52 +1,9 @@
 package properties
 
 import (
-	"encoding/json"
 	"reflect"
 	"testing"
-
-	"github.com/loksonarius/mcsm/pkg/config"
 )
-
-func TestAsStringMap(t *testing.T) {
-	tests := []struct {
-		name string
-		c    config.ConfigDict
-		m    map[string]interface{}
-	}{
-		{
-			name: "drops non-string keys",
-			c: config.ConfigDict{
-				"foo1": "bar",
-				"foo2": 2,
-				42:     4200,
-				false:  []string{},
-			},
-			m: map[string]interface{}{
-				"foo1": "bar",
-				"foo2": 2,
-			},
-		},
-		{
-			name: "handles empty configs",
-			c:    emptyConfig,
-			m:    map[string]interface{}{},
-		},
-	}
-
-	for _, tc := range tests {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-			out := asStringMap(tc.c)
-			if !reflect.DeepEqual(out, tc.m) {
-				g, _ := json.Marshal(out)
-				e, _ := json.Marshal(tc.m)
-				t.Errorf("got %s, expected %s", g, e)
-			}
-		})
-	}
-}
 
 func TestToPropertiesKey(t *testing.T) {
 	tests := []struct {

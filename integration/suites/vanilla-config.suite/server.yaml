@@ -1,0 +1,17 @@
+---
+install:
+  kind: vanilla
+  version: "latest"
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+configs:
+  eula:
+    accepted: false
+  vanilla:
+    rcon.port: 42
+    gamemode: nap
+    pvp: false
+  bedrock:

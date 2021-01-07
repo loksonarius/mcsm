@@ -51,8 +51,6 @@ func Marshal(i interface{}) []byte {
 }
 
 func Unmarshal(dict config.ConfigDict, target interface{}) {
-	properties := asStringMap(dict)
-
 	v := reflect.ValueOf(target)
 	for v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
 		v = v.Elem()
@@ -75,7 +73,7 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 		}
 
 		var value interface{}
-		value, valueFound := properties[key]
+		value, valueFound := dict[key]
 
 		// no default, no value, just leave it alone
 		if !valueFound && field.Kind() != reflect.String && def == "" {

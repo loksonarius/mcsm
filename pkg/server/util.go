@@ -39,7 +39,69 @@ func downloadFileToPath(downloadURL, path string) error {
 	return err
 }
 
-func javaArgs(jarPath string, ro RuntimeOpts) []string {
+type javaVersion struct {
+	major int
+	minor int
+	patch int
+}
+
+func (v javaVersion) String() string {
+	return fmt.Sprintf("%d.%d.%d", v.major, v.minor, v.patch)
+}
+
+func getSystemJavaVersion() javaVersion {
+	version := javaVersion{}
+	// if java isn't installed, w.e, something else'll surely break anyway
+	path, err := exec.LookPath("java")
+	if err != nil {
+		return version
+	}
+
+	cmd := exec.Command(path, "-version")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return version
+	}
+
+	// this part split off for sake of unit testing
+	return parseJavaVersion(out)
+}
+
+func parseJavaVersion(in []byte) javaVersion {
+	major, minor, patch := 0, 0, 0
+	// this is tailor written expecting openjdk -- I ain't about to license
+	// Oracle stuff to find a version string format :\
+	re := regexp.MustCompile(`(openjdk|java) version "(?P<major>\d+).(?P<minor>\d+).(?P<patch>\d+)(_\d+)?"`)
+	if re.Match(in) {
+		matches := re.FindStringSubmatch(string(in))
+		if len(matches) != re.NumSubexp()+1 {
+			return javaVersion{}
+		}
+
+		major, _ = strconv.Atoi(matches[re.SubexpIndex("major")])
+		minor, _ = strconv.Atoi(matches[re.SubexpIndex("minor")])
+		patch, _ = strconv.Atoi(matches[re.SubexpIndex("patch")])
+	} else {
+		// alternative output format I've seen in 1.12+ opendjdk alpine builds
+		re = regexp.MustCompile(`(openjdk|java) version "(?P<minor>\d+)-ea"`)
+		if !re.Match(in) {
+			return javaVersion{}
+		}
+
+		matches := re.FindStringSubmatch(string(in))
+		if len(matches) != re.NumSubexp()+1 {
+			return javaVersion{}
+		}
+
+		major = 1
+		minor, _ = strconv.Atoi(matches[re.SubexpIndex("minor")])
+		patch = 0
+	}
+
+	return javaVersion{major, minor, patch}
+}
+
+func javaArgs(jarPath string, ro RuntimeOpts, v javaVersion) []string {
 	args := make([]string, 0)
 
 	args = append(args, fmt.Sprintf("-Xms%s", ro.InitialMemory))
@@ -66,7 +128,6 @@ func javaArgs(jarPath string, ro RuntimeOpts) []string {
 		args = append(args, "-XX:G1HeapRegionSize=8M")
 		args = append(args, "-XX:G1ReservePercent=20")
 		args = append(args, "-XX:InitiatingHeapOccupancyPercent=15")
-
 	}
 
 	args = append(args, "-XX:G1HeapWastePercent=5")
@@ -80,8 +141,7 @@ func javaArgs(jarPath string, ro RuntimeOpts) []string {
 	args = append(args, "-Daikars.new.flags=true")
 
 	if ro.DebugGC {
-		maj, min, _ := javaVersion()
-		if maj == 1 && min >= 8 && min <= 10 { // java 1.8-1.10
+		if v.major == 1 && v.minor >= 8 && v.minor <= 10 { // java 1.8-1.10
 			args = append(args, "-Xloggc:gc.log")
 			args = append(args, "-verbose:gc")
 			args = append(args, "-XX:+PrintGCDetails")
@@ -90,7 +150,7 @@ func javaArgs(jarPath string, ro RuntimeOpts) []string {
 			args = append(args, "-XX:+UseGCLogFileRotation")
 			args = append(args, "-XX:NumberOfGCLogFiles=5")
 			args = append(args, "-XX:GCLogFileSize=1M")
-		} else if maj == 1 && min >= 11 { // java 1.11+
+		} else if v.major == 1 && v.minor >= 11 || v.major > 1 { // java 1.11+
 			args = append(args, "-Xlog:gc*:logs/gc.log:time,uptime:filecount=5,filesize=1M")
 		} else {
 			// I ain't got no clue, check aikar's blog
@@ -101,35 +161,4 @@ func javaArgs(jarPath string, ro RuntimeOpts) []string {
 	args = append(args, "nogui")
 
 	return args
-}
-
-func javaVersion() (major, minor, patch int) {
-	// if java isn't installed, w.e, something else'll surely break anyway
-	path, err := exec.LookPath("java")
-	if err != nil {
-		return
-	}
-
-	cmd := exec.Command(path, "-version")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return
-	}
-
-	// this is tailor written expecting openjdk -- I ain't about to license
-	// Oracle stuff to find a version string format :\
-	re := regexp.MustCompile(`openjdk version "(?P<major>\d+).(?P<minor>\d+).(?P<patch>\d+)"`)
-	if !re.Match(out) {
-		return
-	}
-
-	matches := re.FindStringSubmatch(string(out))
-	if len(matches) != 4 {
-		return
-	}
-
-	major, _ = strconv.Atoi(matches[1])
-	minor, _ = strconv.Atoi(matches[2])
-	patch, _ = strconv.Atoi(matches[3])
-	return
 }

@@ -189,7 +189,8 @@ func (vs *VanillaServer) Run() error {
 	if err != nil {
 		return err
 	}
-	args := javaArgs(vs.ServerBinaryPath, vs.Definition.Run)
+	version := getSystemJavaVersion()
+	args := javaArgs(vs.ServerBinaryPath, vs.Definition.Run, version)
 	cmd := exec.Command(path, args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Setpgid: true,

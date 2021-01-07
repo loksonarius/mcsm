@@ -1,0 +1,15 @@
+---
+install:
+  kind: vanilla
+  version: "1.16.4"
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+configs:
+  eula:
+    accepted: true
+  vanilla:
+    gamemode: creative
+    pvp: false

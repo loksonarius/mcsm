@@ -1,6 +1,6 @@
 package config
 
-type ConfigDict map[interface{}]interface{}
+type ConfigDict map[string]interface{}
 
 type ConfigFile interface {
 	Path() string
