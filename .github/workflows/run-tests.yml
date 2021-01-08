@@ -11,6 +11,7 @@ jobs:
         with:
           go-version: '1.15.2'
       - run: just test
+
   run-integration-tests:
     runs-on: ubuntu-latest
     steps:
@@ -23,4 +24,5 @@ jobs:
         with:
           java-version: '13'
           java-package: jre
+      - run: echo "${GITHUB_WORKSPACE}/build" >> $GITHUB_PATH
       - run: just integration

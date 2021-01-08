@@ -12,7 +12,6 @@ for d in ${EXPECTED_DIRS}; do
   fi
 done
 
-exit 4
 EXPECTED_FILES="\
   server.properties
   eula.txt
@@ -37,3 +36,5 @@ fi
 if ! grep 'Stopping server' logs/latest.log; then
   echo 'Expected graceful shutdown log entry' && exit 4
 fi
+
+exit 1

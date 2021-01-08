@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 build_dir="build"
 package_name=${BINARY}

@@ -52,6 +52,7 @@ case "${COMMAND}" in
     echo "${AVAILABLE_SUITES}"
     ;;
   run)
+    FAILS=0
     for SUITE in ${SUITES}; do
       SUITE_DIR="${SUITES_DIR}/${SUITE}.suite"
       SERVER_DIR="${SERVERS_DIR}/${SUITE}"
@@ -61,10 +62,24 @@ case "${COMMAND}" in
       cp "${SUITE_DIR}"/* "${SERVER_DIR}"
 
       pushd "${SERVER_DIR}" 2>&1 > /dev/null
+
       "${SERVER_DIR}/setup.sh"
-      "${SERVER_DIR}/verify.sh"
+      if [ $? -eq 0 ]; then
+        "${SERVER_DIR}/verify.sh"
+        if [ $? -ne 0 ]; then
+          echo "Suite '${SUITE}' failed verify!"
+          FAILS=$((FAILS+1))
+        fi
+      else
+        echo "Suite '${SUITE}' failed setup!"
+        FAILS=$((FAILS+1))
+      fi
+
       popd 2>&1 > /dev/null
     done
+
+    echo "${FAILS} suite(s) failed"
+    exit "${FAILS}"
     ;;
   clean)
     for SUITE in ${SUITES}; do
