@@ -86,12 +86,38 @@ building locally_
 
 ### Pre-Compiled Binaries
 
-_TBA_
+CI builds and publishes any new release binaries automatically. To download the
+latest version (or even a previous version), visit our [releases
+page](https://github.com/loksonarius/mcsm/releases) and download the `mcsm`
+package that corresponds to your target system.
 
+To download a specific release from your terminal:
+
+```bash
+# download the binary package for the v0.0.1 amd64 release
+wget https://github.com/loksonarius/mcsm/releases/download/v0.0.1/mcsm-linux-amd64.tgz
+
+# unpackage downloaded binary
+tar -xzf mcsm-linux-amd64.tgz
+
+# move binary to somewhere on my PATH
+mv mcsm /usr/local/bin
+```
+
+If it's important to have a one-liner to the latest release of a specific
+version, consider using the [gitreleases.dev](https://gitreleases.dev) service
+instead of linking through GitHub releases:
+
+```bash
+# always pull latest release B)
+wget https://gitreleases.dev/gh/loksonarius/mcsm/latest/mcsm-linux-mips.tgz
+
+# install as usual
+tar -xzf mcsm-linux-mips.tgz && mv mcsm /usr/local/bin
+```
 
 ### Go
 
-_TBA_
 For local system use, run the following from the root of the repo:
 
 ```bash
