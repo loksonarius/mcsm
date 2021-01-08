@@ -20,7 +20,6 @@ EXPECTED_FILES="\
   whitelist.json
   banned-ips.json
   banned-players.json
-  user-cache.json
 "
 
 for f in ${EXPECTED_FILES}; do
