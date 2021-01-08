@@ -81,9 +81,6 @@ configuration management solutions.
 
 ## Install
 
-_There is currently no pipeline in place, so installation requires cloning and
-building locally_
-
 ### Pre-Compiled Binaries
 
 CI builds and publishes any new release binaries automatically. To download the
