@@ -31,7 +31,3 @@ done
 if ! grep 'Default game type: CREATIVE' logs/latest.log; then
   echo 'Expected creative mode log entry' && exit 3
 fi
-
-if ! grep 'Stopping server' logs/latest.log; then
-  echo 'Expected graceful shutdown log entry' && exit 4
-fi
