@@ -28,7 +28,7 @@
          with:
            upload_url: ${{ steps.release.outputs.upload_url }}
            asset_path: ./build/mcsm-linux-amd64.tgz
-           asset_name: build/mcsm-linux-amd64.tgz
+           asset_name: mcsm-linux-amd64.tgz
            asset_content_type: application/gzip
        - uses: actions/upload-release-asset@v1
          env:
@@ -36,7 +36,7 @@
          with:
            upload_url: ${{ steps.release.outputs.upload_url }}
            asset_path: ./build/mcsm-linux-arm.tgz
-           asset_name: build/mcsm-linux-arm.tgz
+           asset_name: mcsm-linux-arm.tgz
            asset_content_type: application/gzip
        - uses: actions/upload-release-asset@v1
          env:
@@ -44,7 +44,7 @@
          with:
            upload_url: ${{ steps.release.outputs.upload_url }}
            asset_path: ./build/mcsm-linux-arm64.tgz
-           asset_name: build/mcsm-linux-arm64.tgz
+           asset_name: mcsm-linux-arm64.tgz
            asset_content_type: application/gzip
        - uses: actions/upload-release-asset@v1
          env:
@@ -52,7 +52,7 @@
          with:
            upload_url: ${{ steps.release.outputs.upload_url }}
            asset_path: ./build/mcsm-linux-mips.tgz
-           asset_name: build/mcsm-linux-mips.tgz
+           asset_name: mcsm-linux-mips.tgz
            asset_content_type: application/gzip
        - uses: actions/upload-release-asset@v1
          env:
@@ -60,5 +60,5 @@
          with:
            upload_url: ${{ steps.release.outputs.upload_url }}
            asset_path: ./build/mcsm-linux-mips64.tgz
-           asset_name: build/mcsm-linux-mips64.tgz
+           asset_name: mcsm-linux-mips64.tgz
            asset_content_type: application/gzip
