@@ -5,7 +5,7 @@
      tags:
        - 'v*'
  jobs:
-   package-binaries:
+   publish-binaries:
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v2

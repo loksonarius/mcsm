@@ -62,6 +62,7 @@ case "${COMMAND}" in
       cp "${SUITE_DIR}"/* "${SERVER_DIR}"
 
       pushd "${SERVER_DIR}" 2>&1 > /dev/null
+        "${SERVER_DIR}/setup.sh"
         if [ $? -eq 0 ]; then
           "${SERVER_DIR}/verify.sh"
           if [ $? -ne 0 ]; then
