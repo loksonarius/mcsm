@@ -12,7 +12,6 @@ for d in ${EXPECTED_DIRS}; do
   fi
 done
 
-exit 4
 EXPECTED_FILES="\
   server.properties
   eula.txt
