@@ -1,9 +1,14 @@
 # mcsm - Minecraft Server Manager
 
-_Consolidate Minecraft server operations_
-
 :warning: *This project is too early in development to be of any practical use to
 anyone* :warning:
+
+![run-tests](https://github.com/loksonarius/mcsm/workflows/run-tests/badge.svg)
+![check-commit](https://github.com/loksonarius/mcsm/workflows/check-commit/badge.svg)
+
+_Consolidate Minecraft server operations_
+
+![mcsm Logo](mcsm-logo.png)
 
 ## Features
 
