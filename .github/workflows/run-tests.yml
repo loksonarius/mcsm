@@ -1,8 +1,8 @@
 ---
-name: check-commit
+name: run-tests
 on: [push]
 jobs:
-  run-code-checks:
+  run-unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -10,8 +10,8 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.15.2'
-      - run: just check
-  get-coverage-report:
+      - run: just test
+  run-integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,4 +19,8 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.15.2'
-      - run: just coverage no
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '13'
+          java-package: jre
+      - run: just integration
