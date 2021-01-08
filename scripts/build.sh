@@ -5,6 +5,7 @@ build_dir="build"
 build_local="${1:-no}"
 package_name=${BINARY}
 version_flags="-X main.version=${VERSION} -X main.commit=${COMMIT}"
+export CGO_ENABLED=0
 linker_flags='-s -w -extldflags "-static"'
 
 mkdir -p "${build_dir}"
