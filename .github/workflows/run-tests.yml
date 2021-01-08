@@ -23,4 +23,5 @@ jobs:
         with:
           java-version: '13'
           java-package: jre
+      - run: echo "${GITHUB_WORKSPACE}/build" >> $GITHUB_PATH
       - run: just integration

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 if [[ -n "${CI}" ]]; then
   exit 0
