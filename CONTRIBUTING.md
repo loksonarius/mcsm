@@ -127,10 +127,9 @@ The following is an overview of the repo's layout:
 │   ├── servers/        # Integration suite runs stay here
 │   ├── suite.sh    # Entrypoint for running and adding integration suites
 │   └── suites/         # Suite definitions live here
-├── internal/       # Go code that shouldn't be externally used
-├── main.go             # Entrypoint for the mcsm binary -- really plain
-├── pkg/            # Go code defining mcsm constructs -- publicly accessible
-└── scripts/            # Scripts used by 'just' tasks
+├── main.go         # Entrypoint for the mcsm binary -- really plain
+├── pkg/                # Go code defining mcsm constructs -- publicly accessible
+└── scripts/        # Scripts used by 'just' tasks
 ```
 
 #### Available Tasks

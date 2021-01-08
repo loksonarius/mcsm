@@ -2,8 +2,11 @@
 
 OPEN_BROWSER="${1:-no}"
 
-go test -timeout=30s -parallel=4 -coverprofile=coverage.out \
-  ./internal/... ./pkg/...
+go test \
+  -timeout=30s \
+  -parallel=4 \
+  -coverprofile=coverage.out \
+  ./pkg/...
 go tool cover -func coverage.out
 
 case "${OPEN_BROWSER}" in
