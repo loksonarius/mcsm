@@ -1,11 +1,7 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 	"regexp"
 
 	"github.com/loksonarius/mcsm/pkg/config"
@@ -85,21 +81,7 @@ type vanillaVersionMetadata struct {
 
 func (vs VanillaServer) getAvailableVersions() ([]vanillaVersionMetadata, error) {
 	var versions []vanillaVersionMetadata
-	versionsURL, err := url.Parse("https://launchermeta.mojang.com/mc/game/version_manifest.json")
-	if err != nil {
-		return versions, err
-	}
-
-	resp, err := http.Get(versionsURL.String())
-	if err != nil {
-		return versions, err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return versions, err
-	}
-
+	addr := "https://launchermeta.mojang.com/mc/game/version_manifest.json"
 	var parsedResponse struct {
 		Latest struct {
 			Release  string
@@ -107,7 +89,9 @@ func (vs VanillaServer) getAvailableVersions() ([]vanillaVersionMetadata, error)
 		}
 		Versions []vanillaVersionMetadata
 	}
-	err = json.Unmarshal(body, &parsedResponse)
+	if err := httpGetAndParseJSON(addr, &parsedResponse); err != nil {
+		return versions, err
+	}
 
 	// we only care about SemVer releases
 	semverFormat := regexp.MustCompile(`^\d+\.\d+(\.\d)?((-rc|-pre)\d+)?$`)
@@ -116,45 +100,26 @@ func (vs VanillaServer) getAvailableVersions() ([]vanillaVersionMetadata, error)
 			versions = append(versions, v)
 		}
 	}
-	return versions, err
+
+	return versions, nil
 }
 
 func (vs VanillaServer) getVersionDownloadURL(version vanillaVersionMetadata) (string, error) {
-	versionURL, err := url.Parse(version.URL)
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := http.Get(versionURL.String())
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	type arbitraryJson map[interface{}]interface{}
 	var parsedResponse struct {
-		// let json ignore the excess keys, we only care about downloads
 		Downloads map[string]struct {
 			Sha1 string
-			Size string
 			URL  string
 		}
 	}
-	err = json.Unmarshal(body, &parsedResponse)
-	entry, ok := parsedResponse.Downloads["server"]
-	if !ok {
-		return "", fmt.Errorf(
-			"no server download found for version %s", version.ID)
-	}
-
-	if _, err := url.Parse(entry.URL); err != nil {
+	if err := httpGetAndParseJSON(version.URL, &parsedResponse); err != nil {
 		return "", err
 	}
 
-	return entry.URL, nil
+	if entry, ok := parsedResponse.Downloads["server"]; ok {
+		return entry.URL, nil
+	}
+
+	return "", fmt.Errorf("no server download found for version %s", version.ID)
 }
 
 func (vs *VanillaServer) Versions() ([]string, error) {

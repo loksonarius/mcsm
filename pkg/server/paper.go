@@ -3,9 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
 
 	"github.com/loksonarius/mcsm/pkg/config"
 	"github.com/loksonarius/mcsm/pkg/config/presets"
@@ -87,113 +84,39 @@ func (ps *PaperServer) Configure() error {
 	return nil
 }
 
-type paperVersionsList struct {
-	ProjectName   string
-	VersionGroups []string
-	Versions      []string
-}
-
-type paperVersionInfo struct {
-	ProjectName string
-	Version     string
-	Builds      []int
-}
-
-type paperBuildInfo struct {
-	ProjectName string
-	Version     string
-	Build       int
-	Downloads   struct {
-		Application struct {
-			Name   string
-			Sha256 string
-		}
-	}
-}
-
 func (ps *PaperServer) getVersionDownloadURL(v string) (string, error) {
 	var emptyURL string
+	addr := "https://papermc.io/api/v2/projects/paper"
 
-	versionURL, err := url.Parse(fmt.Sprintf(
-		"https://papermc.io/api/v2/projects/paper/versions/%s",
-		v,
-	))
-	if err != nil {
-		return emptyURL, err
-	}
-
-	resp, err := http.Get(versionURL.String())
-	if err != nil {
-		return emptyURL, err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return emptyURL, err
-	}
-
-	var versionInfo paperVersionInfo
-	err = json.Unmarshal(body, &versionInfo)
+	var versionInfo struct{ Builds []int }
+	addr = fmt.Sprintf("%s/versions/%s", addr, v)
+	err := httpGetAndParseJSON(addr, &versionInfo)
 	if err != nil {
 		return emptyURL, err
 	}
 
 	build := versionInfo.Builds[len(versionInfo.Builds)-1]
-	buildURL, err := url.Parse(fmt.Sprintf(
-		"https://papermc.io/api/v2/projects/paper/versions/%s/builds/%d",
-		v,
-		build,
-	))
-	if err != nil {
-		return emptyURL, err
+	addr = fmt.Sprintf("%s/builds/%d", addr, build)
+	var buildInfo struct {
+		Downloads struct{ Application struct{ Name string } }
 	}
 
-	resp, err = http.Get(buildURL.String())
-	if err != nil {
-		return emptyURL, err
-	}
-	defer resp.Body.Close()
-
-	body, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return emptyURL, err
-	}
-
-	var buildInfo paperBuildInfo
-	err = json.Unmarshal(body, &buildInfo)
+	err = httpGetAndParseJSON(addr, &buildInfo)
 	if err != nil {
 		return emptyURL, err
 	}
 
 	download := buildInfo.Downloads.Application.Name
-	downloadURL, err := url.Parse(fmt.Sprintf(
-		"https://papermc.io/api/v2/projects/paper/versions/%s/builds/%d/downloads/%s",
-		v,
-		build,
-		download,
-	))
-	if err != nil {
-		return emptyURL, err
-	}
+	addr = fmt.Sprintf("%s/downloads/%s", addr, download)
 
-	return downloadURL.String(), nil
+	return addr, nil
 }
 
 func (ps *PaperServer) Versions() ([]string, error) {
 	var emptyResponse []string
-	versionsURL, err := url.Parse("https://papermc.io/api/v2/projects/paper")
+	body, err := httpGetAndRead("https://papermc.io/api/v2/projects/paper")
 	if err != nil {
-		return emptyResponse, err
-	}
-
-	resp, err := http.Get(versionsURL.String())
-	if err != nil {
-		return emptyResponse, err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return emptyResponse, err
+		return emptyResponse, nil
 	}
 
 	var parsedResponse struct {

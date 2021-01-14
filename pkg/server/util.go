@@ -1,8 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -22,25 +24,53 @@ func downloadFileToPath(downloadURL, path string) error {
 		return err
 	}
 
-	parsedUrl, err := url.Parse(downloadURL)
-	if err != nil {
-		return err
-	}
-
 	out, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
-	resp, err := http.Get(parsedUrl.String())
+	src, err := httpGet(downloadURL)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer src.Close()
 
-	_, err = io.Copy(out, resp.Body)
+	_, err = io.Copy(out, src)
 	return err
+}
+
+func httpGet(addr string) (io.ReadCloser, error) {
+	parsed, err := url.Parse(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Get(parsed.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Body, nil
+}
+
+func httpGetAndRead(addr string) ([]byte, error) {
+	bodySrc, err := httpGet(addr)
+	if err != nil {
+		return nil, err
+	}
+	defer bodySrc.Close()
+
+	return ioutil.ReadAll(bodySrc)
+}
+
+func httpGetAndParseJSON(addr string, target interface{}) error {
+	body, err := httpGetAndRead(addr)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(body, target)
 }
 
 type javaVersion struct {
