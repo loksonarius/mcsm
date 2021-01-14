@@ -100,13 +100,6 @@ func NewRuntimeOpts() RuntimeOpts {
 
 type InstallKind string
 
-const (
-	VanillaInstall = InstallKind("vanilla")
-	ForgeInstall   = InstallKind("forge")
-	SpigotInstall  = InstallKind("spigot")
-	BedrockInstall = InstallKind("bedrock")
-)
-
 type InstallOpts struct {
 	Kind    InstallKind
 	Version string

@@ -3,21 +3,16 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
-	"os/exec"
-	"os/signal"
 	"regexp"
-	"strings"
-	"syscall"
-	"time"
 
 	"github.com/loksonarius/mcsm/pkg/config"
 	"github.com/loksonarius/mcsm/pkg/config/presets"
 )
+
+const VanillaInstall = InstallKind("vanilla")
 
 type VanillaServer struct {
 	Definition       ServerDefinition
@@ -37,7 +32,7 @@ func NewVanillaServer(def ServerDefinition) Server {
 }
 
 func init() {
-	serverInitializers[VanillaInstall] = NewVanillaServer
+	registerServer(VanillaInstall, NewVanillaServer)
 }
 
 func (vs *VanillaServer) Install() error {
@@ -80,7 +75,7 @@ func (vs *VanillaServer) Configure() error {
 	return nil
 }
 
-type versionMetadata struct {
+type vanillaVersionMetadata struct {
 	ID          string
 	Type        string
 	URL         string
@@ -88,8 +83,8 @@ type versionMetadata struct {
 	ReleaseTime string
 }
 
-func (vs VanillaServer) getAvailableVersions() ([]versionMetadata, error) {
-	var versions []versionMetadata
+func (vs VanillaServer) getAvailableVersions() ([]vanillaVersionMetadata, error) {
+	var versions []vanillaVersionMetadata
 	versionsURL, err := url.Parse("https://launchermeta.mojang.com/mc/game/version_manifest.json")
 	if err != nil {
 		return versions, err
@@ -110,7 +105,7 @@ func (vs VanillaServer) getAvailableVersions() ([]versionMetadata, error) {
 			Release  string
 			Snapshot string
 		}
-		Versions []versionMetadata
+		Versions []vanillaVersionMetadata
 	}
 	err = json.Unmarshal(body, &parsedResponse)
 
@@ -124,7 +119,7 @@ func (vs VanillaServer) getAvailableVersions() ([]versionMetadata, error) {
 	return versions, err
 }
 
-func (vs VanillaServer) getVersionDownloadURL(version versionMetadata) (string, error) {
+func (vs VanillaServer) getVersionDownloadURL(version vanillaVersionMetadata) (string, error) {
 	versionURL, err := url.Parse(version.URL)
 	if err != nil {
 		return "", err
@@ -177,67 +172,7 @@ func (vs *VanillaServer) Versions() ([]string, error) {
 }
 
 func (vs *VanillaServer) Run() error {
-	if _, err := os.Stat(vs.ServerBinaryPath); err != nil {
-		if os.IsNotExist(err) {
-			return fmt.Errorf("server not installed, refusing to run")
-		}
-
-		return err
-	}
-
-	path, err := exec.LookPath("java")
-	if err != nil {
-		return err
-	}
-	version := getSystemJavaVersion()
-	args := javaArgs(vs.ServerBinaryPath, vs.Definition.Run, version)
-	cmd := exec.Command(path, args...)
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true,
-		Pgid:    0,
-	}
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	in, err := cmd.StdinPipe()
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("Starting '%s %s'\n", path, strings.Join(args, " "))
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-
-	go func() {
-		io.Copy(in, os.Stdin)
-	}()
-
-	cmdErrChan := make(chan error, 1)
-	go func() {
-		cmdErrChan <- cmd.Wait()
-	}()
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGINT)
-
-	timeoutChan := make(chan int, 1)
-
-	for {
-		select {
-		case err := <-cmdErrChan:
-			return err
-		case <-sigChan:
-			if _, err := in.Write([]byte("stop\n")); err != nil {
-				// ru-roh
-			}
-
-			go time.AfterFunc(6*time.Second, func() { timeoutChan <- 1 })
-		case <-timeoutChan:
-			if err := cmd.Process.Kill(); err != nil {
-				// woah, what a hardy process
-			}
-
-			return nil
-		}
-	}
+	binaryPath := vs.ServerBinaryPath
+	runOpts := vs.Definition.Run
+	return runJavaServer(binaryPath, runOpts)
 }
