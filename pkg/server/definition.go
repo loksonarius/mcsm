@@ -160,7 +160,6 @@ func DefinitionFromPath(path string) (ServerDefinition, error) {
 	}
 
 	if serverDef.Configs == nil {
-		fmt.Println("hoho")
 		serverDef.Configs = defaultServerDefinition.Configs
 	}
 
