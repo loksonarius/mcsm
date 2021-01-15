@@ -134,7 +134,7 @@ func NewServerDefinition() ServerDefinition {
 
 func DefinitionFromPath(path string) (ServerDefinition, error) {
 	defaultServerDefinition := NewServerDefinition()
-	serverDef := defaultServerDefinition
+	serverDef := NewServerDefinition()
 
 	path, err := filepath.Abs(path)
 	if err != nil {
