@@ -8,13 +8,14 @@
 
 <!--- What types of changes does your code introduce? -->
 <!--- Put an `x` in all the boxes that apply -->
-- [ ] Core
 - [ ] Bugfix
 - [ ] New feature
-- [ ] Enhancement/optimization
-- [ ] Keyboard (addition or update)
-- [ ] Keymap/layout/userspace (addition or update)
+- [ ] Performance/Optimization
 - [ ] Documentation
+- [ ] Chore
+- [ ] Pipelines/Tooling
+- [ ] Meta
+- [ ] Style/Refactor
 
 ## Related Issues
 
