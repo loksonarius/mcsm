@@ -42,14 +42,12 @@ environments or OS service definitions like systemd.
 
 ### Consolidated, version-control friendly server declaration
 
-_`vanilla` is currently the only server type supported_
-
 ```yaml
 # hardcore-server-sample.yaml
 # Contains install and runtime specifications in one place
 ---
 install:
-  kind: paper # various install types including vanilla, bedrock, and forge
+  kind: paper # various install types such as vanilla, bedrock, and paper
   version: 1.16.4
   plugins:
   # pull copies of plugins from remote sources at install time
