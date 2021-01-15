@@ -19,4 +19,3 @@ for f in ${EXPECTED_FILES}; do
     echo "expected '${f}' to be present" && exit 2
   fi
 done
-

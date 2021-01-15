@@ -1,0 +1,14 @@
+---
+install:
+  kind: bedrock
+  version: "latest"
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+configs:
+  eula:
+  vanilla:
+  spigot:
+  bukkit:
