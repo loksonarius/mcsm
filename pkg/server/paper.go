@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/loksonarius/mcsm/pkg/config"
@@ -117,18 +116,16 @@ func (ps *PaperServer) getVersionDownloadURL(v string) (string, error) {
 
 func (ps *PaperServer) Versions() ([]string, error) {
 	var emptyResponse []string
-	body, err := httpGetAndRead("https://papermc.io/api/v2/projects/paper")
-	if err != nil {
-		return emptyResponse, nil
-	}
-
+	addr := "https://papermc.io/api/v2/projects/paper"
 	var parsedResponse struct {
 		VersionGroups []string
 		Versions      []string
 	}
-	err = json.Unmarshal(body, &parsedResponse)
+	if err := httpGetAndParseJSON(addr, &parsedResponse); err != nil {
+		return emptyResponse, err
+	}
 
-	return parsedResponse.Versions, err
+	return parsedResponse.Versions, nil
 }
 
 func (ps *PaperServer) Run() error {
