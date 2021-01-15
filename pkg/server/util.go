@@ -1,24 +1,25 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
+	"syscall"
+	"time"
 )
 
 func downloadFileToPath(downloadURL, path string) error {
 	path, err := filepath.Abs(path)
-	if err != nil {
-		return err
-	}
-
-	parsedUrl, err := url.Parse(downloadURL)
 	if err != nil {
 		return err
 	}
@@ -29,14 +30,47 @@ func downloadFileToPath(downloadURL, path string) error {
 	}
 	defer out.Close()
 
-	resp, err := http.Get(parsedUrl.String())
+	src, err := httpGet(downloadURL)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer src.Close()
 
-	_, err = io.Copy(out, resp.Body)
+	_, err = io.Copy(out, src)
 	return err
+}
+
+func httpGet(addr string) (io.ReadCloser, error) {
+	parsed, err := url.Parse(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Get(parsed.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Body, nil
+}
+
+func httpGetAndRead(addr string) ([]byte, error) {
+	bodySrc, err := httpGet(addr)
+	if err != nil {
+		return nil, err
+	}
+	defer bodySrc.Close()
+
+	return ioutil.ReadAll(bodySrc)
+}
+
+func httpGetAndParseJSON(addr string, target interface{}) error {
+	body, err := httpGetAndRead(addr)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(body, target)
 }
 
 type javaVersion struct {
@@ -161,4 +195,70 @@ func javaArgs(jarPath string, ro RuntimeOpts, v javaVersion) []string {
 	args = append(args, "nogui")
 
 	return args
+}
+
+func runJavaServer(binaryPath string, runOpts RuntimeOpts) error {
+	if _, err := os.Stat(binaryPath); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("server not installed, refusing to run")
+		}
+
+		return err
+	}
+
+	path, err := exec.LookPath("java")
+	if err != nil {
+		return err
+	}
+	version := getSystemJavaVersion()
+	args := javaArgs(binaryPath, runOpts, version)
+	cmd := exec.Command(path, args...)
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+		Pgid:    0,
+	}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	in, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Starting '%s %s'\n", path, strings.Join(args, " "))
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	go func() {
+		io.Copy(in, os.Stdin)
+	}()
+
+	cmdErrChan := make(chan error, 1)
+	go func() {
+		cmdErrChan <- cmd.Wait()
+	}()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGINT)
+
+	timeoutChan := make(chan int, 1)
+
+	for {
+		select {
+		case err := <-cmdErrChan:
+			return err
+		case <-sigChan:
+			if _, err := in.Write([]byte("stop\n")); err != nil {
+				// ru-roh
+			}
+
+			go time.AfterFunc(6*time.Second, func() { timeoutChan <- 1 })
+		case <-timeoutChan:
+			if err := cmd.Process.Kill(); err != nil {
+				// woah, what a hardy process
+			}
+
+			return nil
+		}
+	}
 }

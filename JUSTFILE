@@ -11,6 +11,7 @@ alias co := coverage
 alias i := integration
 alias te := test-env
 alias p := package
+alias gp := gen-preset
 
 # Runs pre build checks to verify formatting, linting, and such
 check:
@@ -41,8 +42,12 @@ integration suite="all": _build_integration_image
 
 # Enters a bash session inside integration test image
 test-env: _build_integration_image
-	./scripts/test_env.sh
+  ./scripts/test_env.sh
 
 # Packages built binaries into release-ready tars
 package: build
-	./scripts/package.sh
+  ./scripts/package.sh
+
+# Generate config preset type or value definitions for a yaml config file
+gen-preset file target="type":
+	./scripts/generate-yaml-preset.sh "{{file}}" "{{target}}"

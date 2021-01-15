@@ -3,4 +3,4 @@
 
 set -e
 
-mcsm config > server.config
+mcsm install server.yaml

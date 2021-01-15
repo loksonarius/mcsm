@@ -1,0 +1,35 @@
+---
+install:
+  kind: paper
+  version: "latest"
+  plugins:
+    - url: "https://media.forgecdn.net/files/3007/470/Vault.jar"
+    - file: "plugin-depot/Clearlag.jar"
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+configs:
+  vanilla:
+    gamemode: creative
+  spigot:
+    world-settings:
+      default:
+        merge-radius:
+          exp: 6.0
+  bukkit:
+    settings:
+      allow-end: false
+      shutdown-message: "Go home!"
+    spawn-limits:
+      ambient: 2
+    chunk-gc:
+      period-in-ticks: 1200
+  paper:
+    settings:
+      enable-player-collisions: false
+    world-settings:
+      default:
+        max-growth-height:
+          cactus: 600

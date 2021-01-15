@@ -11,7 +11,13 @@ type Server interface {
 	Run() error
 }
 
-var serverInitializers = make(map[InstallKind]func(def ServerDefinition) Server)
+type serverInitFunc func(def ServerDefinition) Server
+
+var serverInitializers = make(map[InstallKind]serverInitFunc)
+
+func registerServer(kind InstallKind, f serverInitFunc) {
+	serverInitializers[kind] = f
+}
 
 func GetServer(def ServerDefinition) (Server, error) {
 	kind := def.Install.Kind

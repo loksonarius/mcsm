@@ -7,7 +7,7 @@ run:
   initialmemory: 1G
   maxmemory: 1G
 
-config:
+configs:
   eula:
   vanilla:
   spigot:

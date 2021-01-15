@@ -100,13 +100,6 @@ func NewRuntimeOpts() RuntimeOpts {
 
 type InstallKind string
 
-const (
-	VanillaInstall = InstallKind("vanilla")
-	ForgeInstall   = InstallKind("forge")
-	SpigotInstall  = InstallKind("spigot")
-	BedrockInstall = InstallKind("bedrock")
-)
-
 type InstallOpts struct {
 	Kind    InstallKind
 	Version string
@@ -141,7 +134,7 @@ func NewServerDefinition() ServerDefinition {
 
 func DefinitionFromPath(path string) (ServerDefinition, error) {
 	defaultServerDefinition := NewServerDefinition()
-	serverDef := defaultServerDefinition
+	serverDef := NewServerDefinition()
 
 	path, err := filepath.Abs(path)
 	if err != nil {
@@ -167,7 +160,6 @@ func DefinitionFromPath(path string) (ServerDefinition, error) {
 	}
 
 	if serverDef.Configs == nil {
-		fmt.Println("hoho")
 		serverDef.Configs = defaultServerDefinition.Configs
 	}
 

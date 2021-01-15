@@ -59,7 +59,7 @@ case "${COMMAND}" in
 
       rm -rf "${SERVER_DIR}"
       mkdir -p "${SERVER_DIR}"
-      cp "${SUITE_DIR}"/* "${SERVER_DIR}"
+      cp -r "${SUITE_DIR}"/* "${SERVER_DIR}"
 
       pushd "${SERVER_DIR}" 2>&1 > /dev/null
         "${SERVER_DIR}/setup.sh"
@@ -76,7 +76,11 @@ case "${COMMAND}" in
       popd 2>&1 > /dev/null
     done
 
-    echo "${FAILS} suite(s) failed"
+    if [[ "${FAILS}" -eq 0 ]]; then
+      echo "All suites passed"
+    else
+      echo "${FAILS} suite(s) failed"
+    fi
     exit "${FAILS}"
     ;;
   clean)
