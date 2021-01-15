@@ -14,6 +14,10 @@ configs:
   vanilla:
     gamemode: creative
   spigot:
+    world-settings:
+      default:
+        merge-radius:
+          exp: 6.0
   bukkit:
     settings:
       allow-end: false
@@ -22,3 +26,10 @@ configs:
       ambient: 2
     chunk-gc:
       period-in-ticks: 1200
+  paper:
+    settings:
+      enable-player-collisions: false
+    world-settings:
+      default:
+        max-growth-height:
+          cactus: 600

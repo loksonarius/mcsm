@@ -21,6 +21,9 @@ fi
 EXPECTED_FILES="\
   server.properties
   eula.txt
+  bukkit.yml
+  spigot.yml
+  paper.yml
   minecraft_server.jar
   ops.json
   whitelist.json
@@ -53,4 +56,20 @@ fi
 
 if ! grep 'allow-end: false' bukkit.yml; then
   echo 'Expected end dimension to be unallowed in bukkit config' && exit 8
+fi
+
+if ! grep 'exp: 6' spigot.yml; then
+  echo 'Expected 6 exp merge radius in spigot config' && exit 9
+fi
+
+if ! grep 'item-despawn-rate: 6000' spigot.yml; then
+  echo 'Expected item despawn rate of 6000 in spigot config' && exit 10
+fi
+
+if ! grep 'enable-player-collisions: false' paper.yml; then
+  echo 'Expected disabled player collisions in paper config' && exit 11
+fi
+
+if ! grep 'cactus: 600' paper.yml; then
+  echo 'Expected cactus growth limit of 600 in paper config' && exit 12
 fi

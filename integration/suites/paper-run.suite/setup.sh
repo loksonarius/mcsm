@@ -15,7 +15,8 @@ function runAndStopServer {
   done
 
   echo "Server startup complete -- stopping now"
-  kill "${PID}"
+  # we wait /just/ a bit longer while plugins wrap up their post-init
+  sleep 5 && kill "${PID}" && sleep 5
 }
 export -f runAndStopServer
 
