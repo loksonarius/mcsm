@@ -26,6 +26,8 @@ func NewPaperServer(def ServerDefinition) Server {
 			presets.ServerPropertiesFromConfig(def.Configs),
 			presets.EulaTxtFromConfig(def.Configs),
 			presets.BukkitYmlFromConfig(def.Configs),
+			presets.SpigotYmlFromConfig(def.Configs),
+			presets.PaperYmlFromConfig(def.Configs),
 		},
 	}
 }
