@@ -4,15 +4,16 @@ install:
   version: "latest"
   plugins:
     - url: "https://media.forgecdn.net/files/3007/470/Vault.jar"
-    - file: "plugin-depot/Clearlag.jar"
 
 run:
   initialmemory: 1G
-  maxmemory: 1G
+  maxmemory: 2G
 
 configs:
+  eula:
+    accepted: false
   vanilla:
-    gamemode: creative
+    gamemode: bar
   spigot:
   bukkit:
     settings:

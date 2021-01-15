@@ -6,7 +6,6 @@ EXPECTED_DIRS="\
   plugins
   world
   world_nether
-  world_the_end
 "
 
 for d in ${EXPECTED_DIRS}; do
@@ -14,6 +13,10 @@ for d in ${EXPECTED_DIRS}; do
     echo "expected '${d}' to be present" && exit 1
   fi
 done
+
+if [[ -d "world_the_end" ]]; then
+  echo "expected end dimension dir to not be present" && exit 2
+fi
 
 EXPECTED_FILES="\
   server.properties
@@ -28,18 +31,26 @@ EXPECTED_FILES="\
 
 for f in ${EXPECTED_FILES}; do
   if [[ ! -f "${f}" ]]; then
-    echo "expected '${f}' to be present" && exit 2
+    echo "expected '${f}' to be present" && exit 3
   fi
 done
 
 if ! grep 'Reloading ResourceManager: Default, bukkit' logs/latest.log; then
-  echo 'Expected bukkit ResourceManager reload log' && exit 3
+  echo 'Expected bukkit ResourceManager reload log' && exit 4
 fi
 
 if ! grep 'Loading ClearLag' logs/latest.log; then
-  echo 'Expected ClearLag plugin init log' && exit 4
+  echo 'Expected ClearLag plugin init log' && exit 5
 fi
 
 if ! grep 'Stopping the server' logs/latest.log; then
-  echo 'Expected graceful shutdown log' && exit 5
+  echo 'Expected graceful shutdown log' && exit 6
+fi
+
+if ! grep 'ambient: 2' bukkit.yml; then
+  echo 'Expected ambient spawn limit of 2 in bukkit config' && exit 7
+fi
+
+if ! grep 'allow-end: false' bukkit.yml; then
+  echo 'Expected end dimension to be unallowed in bukkit config' && exit 8
 fi
