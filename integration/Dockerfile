@@ -1,14 +1,17 @@
-FROM alpine:3.12
+FROM ubuntu:20.04
 
-RUN apk -U --no-cache upgrade && \
-  apk -U --no-cache add \
-    bash \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+  apt-get install -y \
     curl \
     jq \
-    openjdk11 \
-    openssl \
+    openjdk-11-jre \
+    unzip \
     vim \
-    wget
+    wget \
+    && \
+  apt-get clean &&\
+  rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /tests
 WORKDIR /tests
