@@ -9,16 +9,18 @@ import (
 )
 
 type BasicStruct struct {
-	A string `properties:"key:basica"`
-	B int    `properties:"-"`
-	C bool   // ignored field
-	D uint64 `properties:"-"`
-	E bool   `properties:"-"`
-	F []int  `properties:"-"`
-	G int32  `properties:"default:16"`
-	H string `properties:"default:hhh"`
-	I []bool `properties:"key:impossible?"`
-	J bool   `properties:"default:true"`
+	A string  `properties:"key:basica"`
+	B int     `properties:"-"`
+	C bool    // ignored field
+	D uint64  `properties:"-"`
+	E bool    `properties:"-"`
+	F []int   `properties:"-"`
+	G int32   `properties:"default:16"`
+	H string  `properties:"default:hhh"`
+	I []bool  `properties:"key:impossible?"`
+	J bool    `properties:"default:true"`
+	K float32 `properties:"default:0.32"`
+	L float64 `properties:"default:0.64"`
 }
 
 var emptyConfig = config.ConfigDict{}
@@ -27,6 +29,7 @@ var basicConfig = config.ConfigDict{
 	"b":      42,
 	"d":      86,
 	"e":      true,
+	"l":      0.86,
 }
 
 func TestMarshal(t *testing.T) {
@@ -41,8 +44,9 @@ func TestMarshal(t *testing.T) {
 				A: "foo",
 				B: 42,
 				C: true,
+				L: 0.86,
 			},
-			e: "basica=foo\nb=42\nd=0\ne=false\ng=0\nh=\nj=false\n",
+			e: "basica=foo\nb=42\nd=0\ne=false\ng=0\nh=\nj=false\nk=0.0000\nl=0.8600\n",
 		},
 		{
 			name: "marshals pointer to basic structs",
@@ -50,8 +54,9 @@ func TestMarshal(t *testing.T) {
 				A: "foo",
 				B: 42,
 				C: true,
+				L: 0.86,
 			},
-			e: "basica=foo\nb=42\nd=0\ne=false\ng=0\nh=\nj=false\n",
+			e: "basica=foo\nb=42\nd=0\ne=false\ng=0\nh=\nj=false\nk=0.0000\nl=0.8600\n",
 		},
 	}
 
@@ -86,6 +91,8 @@ func TestUnmarshal(t *testing.T) {
 				G: 16,
 				H: "hhh",
 				J: true,
+				K: 0.32,
+				L: 0.86,
 			},
 		},
 	}
@@ -126,6 +133,8 @@ func TestUnmarshalEdgeCases(t *testing.T) {
 			G: 16,
 			H: "hhh",
 			J: true,
+			K: 0.32,
+			L: 0.64,
 		}
 		Unmarshal(c, &g)
 		if !reflect.DeepEqual(g, e) {

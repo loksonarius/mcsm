@@ -1,0 +1,9 @@
+---
+install:
+  kind: bedrock
+  version: "latest"
+
+configs:
+  bedrock:
+    gamemode: creative
+    player-movement-distance-threshold: 0.9

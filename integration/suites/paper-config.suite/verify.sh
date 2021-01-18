@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # verify.sh
 
-#!/usr/bin/env bash
-# verify.sh
-
 if [[ "$(cat server.config | jq -r .Install.Kind)" != "paper" ]]; then
   echo "expected install kind to be vanilla" && exit 1
 fi

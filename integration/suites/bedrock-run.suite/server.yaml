@@ -1,0 +1,13 @@
+---
+install:
+  kind: bedrock
+  version: "latest"
+
+run:
+  initialmemory: 1G
+  maxmemory: 1G
+
+configs:
+  bedrock:
+    gamemode: creative
+    level-name: test-world

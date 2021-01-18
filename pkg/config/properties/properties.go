@@ -38,6 +38,8 @@ func Marshal(i interface{}) []byte {
 		case reflect.Uint, reflect.Uint8, reflect.Uint16,
 			reflect.Uint32, reflect.Uint64:
 			value = fmt.Sprintf("%d", field.Uint())
+		case reflect.Float32, reflect.Float64:
+			value = fmt.Sprintf("%.4f", field.Float())
 		case reflect.Bool:
 			value = fmt.Sprintf("%t", field.Bool())
 		default:
@@ -115,6 +117,18 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 				field.SetUint(uint64(value.(int64)))
 			default:
 				field.SetUint(uint64(value.(uint)))
+			}
+		case reflect.Float32, reflect.Float64:
+			if !valueFound {
+				if v, err := strconv.ParseFloat(def, 64); err == nil {
+					value = v
+				}
+			}
+			switch value.(type) {
+			case float64:
+				field.SetFloat(float64(value.(float64)))
+			default:
+				field.SetFloat(float64(value.(float32)))
 			}
 		case reflect.Bool:
 			if !valueFound {

@@ -1,8 +1,5 @@
 # mcsm - Minecraft Server Manager
 
-:warning: *This project is too early in development to be of any practical use to
-anyone* :warning:
-
 ![run-tests](https://github.com/loksonarius/mcsm/workflows/run-tests/badge.svg)
 ![check-commit](https://github.com/loksonarius/mcsm/workflows/check-commit/badge.svg)
 
@@ -55,7 +52,7 @@ install:
   # source local plugins as well
   - "/plugins/world-edit.jar"
 
-run:
+run: # configure memory consumption for Java-based servers
   initialmemory: 8G
   maxmemory: 8G
 
