@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"golang.org/x/net/html"
 
@@ -30,8 +31,7 @@ func NewBedrockServer(def ServerDefinition) Server {
 		Definition:       def,
 		ServerBinaryPath: "bedrock_server",
 		Configs: []config.ConfigFile{
-			presets.ServerPropertiesFromConfig(def.Configs),
-			presets.EulaTxtFromConfig(def.Configs),
+			presets.BedrockServerPropertiesFromConfig(def.Configs),
 		},
 	}
 }
@@ -137,6 +137,12 @@ func (bs *BedrockServer) Install() error {
 }
 
 func (bs *BedrockServer) Configure() error {
+	for _, cfg := range bs.Configs {
+		if err := cfg.Write(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -277,5 +283,24 @@ func (bs *BedrockServer) Versions() ([]string, error) {
 }
 
 func (bs *BedrockServer) Run() error {
-	return nil
+	if _, err := os.Stat(bs.ServerBinaryPath); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("server not installed, refusing to run")
+		}
+
+		return err
+	}
+
+	path, err := filepath.Abs(bs.ServerBinaryPath)
+	if err != nil {
+		return err
+	}
+
+	args := []string{filepath.Base(path)}
+
+	ld_path := filepath.Dir(bs.ServerBinaryPath)
+	env := append(os.Environ(), fmt.Sprintf("LD_LIBRARY_PATH=%s", ld_path))
+
+	fmt.Printf("Starting '%s'\n", bs.ServerBinaryPath)
+	return syscall.Exec(path, args, env)
 }
