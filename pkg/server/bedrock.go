@@ -68,7 +68,6 @@ func (bs *BedrockServer) Install() error {
 		"https://minecraft.azureedge.net/bin-linux/bedrock-server-%s.zip",
 		targetVersion,
 	)
-	fmt.Printf("downloading from %s\n", versionURL)
 
 	zipDir := filepath.Dir(bs.ServerBinaryPath)
 	zipPath := filepath.Join(zipDir, "bedrock.zip")
@@ -82,7 +81,25 @@ func (bs *BedrockServer) Install() error {
 	}
 	defer r.Close()
 
+	ignore_paths := []string{
+		"whitelist.json",
+		"permissions.json",
+	}
 	for _, f := range r.File {
+		info := f.FileHeader.FileInfo()
+		mode := info.Mode()
+
+		ignore := false
+		for _, ip := range ignore_paths {
+			if f.Name == ip {
+				ignore = true
+				break
+			}
+		}
+		if ignore {
+			continue
+		}
+
 		rc, err := f.Open()
 		if err != nil {
 			return err
@@ -94,15 +111,25 @@ func (bs *BedrockServer) Install() error {
 			return err
 		}
 
-		out, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		defer out.Close()
+		if info.IsDir() {
+			if err := os.MkdirAll(path, mode); err != nil {
+				return err
+			}
+		} else {
+			out, err := os.Create(path)
+			if err != nil {
+				return err
+			}
+			defer out.Close()
 
-		_, err = io.Copy(out, rc)
-		if err != nil {
-			return err
+			if err := out.Chmod(mode); err != nil {
+				return err
+			}
+
+			_, err = io.Copy(out, rc)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -202,59 +229,6 @@ func (bs *BedrockServer) getGamepediaListedVersions() ([]string, error) {
 	return versions, nil
 }
 
-func (bs *BedrockServer) getMojangLatestVersion() (string, error) {
-	var version string
-	addr := "https://www.minecraft.net/en-us/download/server/bedrock"
-	body, err := httpGet(addr)
-	if err != nil {
-		return version, err
-	}
-	defer body.Close()
-
-	var downloadBtn *html.Node
-	var crawl func(n *html.Node)
-	crawl = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
-			for _, a := range n.Attr {
-				if a.Key == "data-platform" && a.Val == "serverBedrockLinux" {
-					downloadBtn = n
-					return
-				}
-			}
-		}
-
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			crawl(c)
-		}
-	}
-
-	doc, err := html.Parse(body)
-	if err != nil {
-		return version, err
-	}
-
-	crawl(doc)
-
-	if downloadBtn == nil {
-		return version, fmt.Errorf("failed finding latest bedrock version")
-	}
-
-	urlRe := regexp.MustCompile(`^.*bedrock-server-(?P<version>\d+.\d+.\d+(.\d+)?)`)
-	for _, a := range downloadBtn.Attr {
-		if a.Key != "href" || !urlRe.MatchString(a.Val) {
-			continue
-		}
-
-		matches := urlRe.FindStringSubmatch(a.Val)
-		if len(matches) == urlRe.NumSubexp()+1 {
-			version = matches[urlRe.SubexpIndex("version")]
-			return version, nil
-		}
-	}
-
-	return version, fmt.Errorf("failed to find latest bedrock server version")
-}
-
 func (bs *BedrockServer) Versions() ([]string, error) {
 	versions := []string{}
 
@@ -263,25 +237,6 @@ func (bs *BedrockServer) Versions() ([]string, error) {
 		return versions, err
 	}
 
-	// latest, err := bs.getMojangLatestVersion()
-	// if err != nil {
-	// 	return versions, err
-	// }
-	//
-	// skip := true
-	// for _, v := range gpVersions {
-	// 	fmt.Printf("looking at %s vs %s\n", v, latest)
-	// 	if strings.Contains(latest, v) {
-	// 		skip = false
-	// 	}
-	//
-	// 	if skip {
-	// 		continue
-	// 	}
-	//
-	// 	versions = append(versions, v)
-	// }
-	//
 	if len(versions) == 0 {
 		return versions, fmt.Errorf("failed to find released bedrock versions")
 	}
