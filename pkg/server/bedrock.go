@@ -92,6 +92,16 @@ func (bs *BedrockServer) Install() error {
 		ignore := false
 		for _, ip := range ignore_paths {
 			if f.Name == ip {
+				// check if file already exists
+				if _, err := os.Stat(ip); err != nil {
+					if os.IsNotExist(err) { // doesn't exist
+						break
+					}
+
+					return err // exists but might have strict permissions
+				}
+
+				// exists, so ignore
 				ignore = true
 				break
 			}
