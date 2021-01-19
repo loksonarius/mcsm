@@ -2,6 +2,7 @@ package presets
 
 import (
 	"io/ioutil"
+	"math"
 	"path/filepath"
 
 	"github.com/loksonarius/mcsm/pkg/config"
@@ -22,7 +23,7 @@ type ServerProperties struct {
 	PVP                            bool   `properties:"key:pvp,default:true"`
 	GenerateStructures             bool   `properties:"key:generate-structures,default:true"`
 	Difficulty                     string `properties:"key:difficulty,default:easy"`
-	NetworkCompressionThreshold    uint   `properties:"key:network-compression-threshold,default:256"`
+	NetworkCompressionThreshold    int    `properties:"key:network-compression-threshold,default:256"`
 	MaxTickTime                    uint   `properties:"key:max-tick-time,default:60000"`
 	MaxPlayers                     uint   `properties:"key:max-players,default:20"`
 	UseNativeTransport             bool   `properties:"key:use-native-transport,default:true"`
@@ -76,7 +77,71 @@ func (p *ServerProperties) Path() string {
 }
 
 func (p *ServerProperties) Validate() error {
-	// nothing can go wrong with type checking!!!
+	switch gm := p.Gamemode; gm {
+	case "survival", "creative", "adventure", "spectator":
+	default:
+		return e("gamemode %s not valid", gm)
+	}
+
+	switch d := p.Difficulty; d {
+	case "peaceful", "easy", "normal", "hard":
+	default:
+		return e("difficulty %s not valid", d)
+	}
+
+	if p.EntityBroadcastRangePercentage < 0 ||
+		p.EntityBroadcastRangePercentage > 500 {
+		return e("entity broadcast range not in range [0,500]")
+	}
+
+	if p.FunctionPermissionLevel < 1 ||
+		p.FunctionPermissionLevel > 4 {
+		return e("function permission level not in range [1,4]")
+	}
+
+	if p.OpPermissionLevel < 1 ||
+		p.OpPermissionLevel > 4 {
+		return e("op permission level not in range [1,4]")
+	}
+
+	if p.MaxBuildHeight%8 != 0 {
+		return e("max build height is not a multiple of 8")
+	}
+
+	if p.MaxPlayers > math.MaxInt32 {
+		return e("max players greater than 2^31 - 1")
+	}
+
+	if p.MaxTickTime > math.MaxInt64 {
+		return e("max tick time greater than 2^63 - 1")
+	}
+
+	if p.MaxWorldSize > 29999984 {
+		return e("max world size greater than 29999984")
+	}
+
+	if p.NetworkCompressionThreshold < -1 {
+		return e("network compression threshold less than 1")
+	}
+
+	if p.ViewDistance < 3 ||
+		p.ViewDistance > 32 {
+		return e("view distance in range [3,32]")
+	}
+
+	ports := []struct {
+		n string
+		v uint
+	}{
+		{"server-port", p.ServerPort},
+		{"rcon-port", p.RconPort},
+	}
+	for _, p := range ports {
+		if p.v < 1 || p.v > 65535 {
+			return e("port %s not in range [1,65535]", p.n)
+		}
+	}
+
 	return nil
 }
 
