@@ -37,7 +37,12 @@ var configCmd = Cmd{
 			return err
 		}
 
-		out, err := json.MarshalIndent(def, "", "\t")
+		srv, err := server.GetServer(def)
+		if err != nil {
+			return err
+		}
+
+		out, err := json.MarshalIndent(srv.Config(), "", "\t")
 		if err != nil {
 			return err
 		}
