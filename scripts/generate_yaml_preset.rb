@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# generate-yaml-preset.rb
+# generate_yaml_preset.rb
 require "yaml"
 require "json"
 
