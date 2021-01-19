@@ -2,37 +2,35 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 )
 
-const USAGE_DOCS = `Minecraft Server Manager
-Usage:
-	%s {subcommand} {arguments}
+var helpUsage = `Usage:
+	%s help {subcommand}
 
-Subcommands:
-%s
-
-Consider using 'help' to explore  the available subcommand's, and their specific
-options.
+The help subcommand will print out detailed usage information for the given
+subcommand including what arguments the subcommand expects, if any.
 `
-
-func printUsageDocs() {
-	sub_docs := make([]string, 0)
-	for _, c := range commands {
-		sub_docs = append(
-			sub_docs,
-			fmt.Sprintf("\t%s\t\t%s", c.Name, c.Summary),
-		)
-	}
-
-	fmt.Printf(USAGE_DOCS, cli, strings.Join(sub_docs, "\n"))
-}
 
 var helpCmd = Cmd{
 	Name:    "help",
-	Summary: "Print this usage information",
+	Summary: "Print specifc usage information for a subcommand",
+	Usage:   helpUsage,
 	Exec: func(args ...string) error {
-		printUsageDocs()
+		if len(args) > 1 {
+			return fmt.Errorf("expected only 1 argument")
+		}
+
+		subcommand := "help"
+		if len(args) >= 1 {
+			subcommand = args[0]
+		}
+
+		if c, ok := commands[subcommand]; ok {
+			fmt.Printf(c.Usage, cli)
+		} else {
+			return fmt.Errorf("%s is not a valid subcommand!\n", subcommand)
+		}
+
 		return nil
 	},
 }

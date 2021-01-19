@@ -3,11 +3,36 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 )
+
+const USAGE_DOCS = `Minecraft Server Manager
+Usage:
+	%s {subcommand} {arguments}
+
+Subcommands:
+%s
+
+Consider using 'help' to explore  the available subcommand's, and their specific
+options.
+`
+
+func printUsageDocs() {
+	sub_docs := make([]string, 0)
+	for _, c := range commands {
+		sub_docs = append(
+			sub_docs,
+			fmt.Sprintf("\t%s\t\t%s", c.Name, c.Summary),
+		)
+	}
+
+	fmt.Printf(USAGE_DOCS, cli, strings.Join(sub_docs, "\n"))
+}
 
 type Cmd struct {
 	Name    string
 	Summary string
+	Usage   string
 	Exec    func(args ...string) error
 }
 
@@ -29,7 +54,7 @@ func Execute(version, commit string) {
 	Version = version
 	Commit = commit
 
-	command := "help"
+	command := ""
 	args := os.Args
 
 	if len(os.Args) > 1 {
@@ -37,8 +62,12 @@ func Execute(version, commit string) {
 		args = args[2:]
 	}
 
-	if f, ok := commands[command]; ok {
-		if err := f.Exec(args...); err != nil {
+	if command == "" {
+		printUsageDocs()
+	}
+
+	if c, ok := commands[command]; ok {
+		if err := c.Exec(args...); err != nil {
 			fmt.Printf("error: %s\n", err)
 			os.Exit(1)
 		}
