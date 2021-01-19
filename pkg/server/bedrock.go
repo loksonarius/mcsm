@@ -146,6 +146,10 @@ func (bs *BedrockServer) Install() error {
 	return nil
 }
 
+func (bs *BedrockServer) Config() config.ConfigDict {
+	return condenseConfig(bs.Definition.Install, bs.Definition.Run, bs.Configs)
+}
+
 func (bs *BedrockServer) Configure() error {
 	for _, cfg := range bs.Configs {
 		if err := cfg.Write(); err != nil {

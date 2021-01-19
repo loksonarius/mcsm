@@ -61,6 +61,10 @@ func (vs *VanillaServer) Install() error {
 	return downloadFileToPath(versionURL, vs.ServerBinaryPath)
 }
 
+func (vs *VanillaServer) Config() config.ConfigDict {
+	return condenseConfig(vs.Definition.Install, vs.Definition.Run, vs.Configs)
+}
+
 func (vs *VanillaServer) Configure() error {
 	for _, cfg := range vs.Configs {
 		if err := cfg.Write(); err != nil {

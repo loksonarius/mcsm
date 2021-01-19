@@ -76,6 +76,10 @@ func (ps *PaperServer) Install() error {
 	return nil
 }
 
+func (ps *PaperServer) Config() config.ConfigDict {
+	return condenseConfig(ps.Definition.Install, ps.Definition.Run, ps.Configs)
+}
+
 func (ps *PaperServer) Configure() error {
 	for _, cfg := range ps.Configs {
 		if err := cfg.Write(); err != nil {

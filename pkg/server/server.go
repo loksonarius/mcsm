@@ -2,10 +2,13 @@ package server
 
 import (
 	"fmt"
+
+	"github.com/loksonarius/mcsm/pkg/config"
 )
 
 type Server interface {
 	Install() error
+	Config() config.ConfigDict
 	Configure() error
 	Versions() ([]string, error)
 	Run() error
@@ -17,6 +20,21 @@ var serverInitializers = make(map[InstallKind]serverInitFunc)
 
 func registerServer(kind InstallKind, f serverInitFunc) {
 	serverInitializers[kind] = f
+}
+
+func condenseConfig(i InstallOpts, r RuntimeOpts, cfs []config.ConfigFile) config.ConfigDict {
+	cfg := make(map[string]interface{})
+
+	cfg["install"] = i
+	cfg["run"] = r
+
+	configFiles := make(map[string]config.ConfigFile)
+	for _, cf := range cfs {
+		configFiles[cf.Path()] = cf
+	}
+	cfg["configs"] = configFiles
+
+	return cfg
 }
 
 func GetServer(def ServerDefinition) (Server, error) {
