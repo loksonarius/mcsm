@@ -4,7 +4,6 @@ Integration testing for `mcsm` is done by running suites in a controlled
 environment that includes the necessary requirements to both run and verify
 installations of Minecraft servers.
 
-
 ## Suites
 
 Suites are basically just directories with some setup and verification scripts
