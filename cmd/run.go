@@ -44,7 +44,7 @@ The run subcommand relies the following expectations:
 
 var runCmd = Cmd{
 	Name:    "run",
-	Summary: "run the current directory's Minecraft server",
+	Summary: "Start an installed Minecraft server",
 	Usage:   runUsage,
 	Exec: func(args ...string) error {
 		if len(args) > 1 {
