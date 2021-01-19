@@ -52,10 +52,6 @@ func (p *BedrockServerProperties) Path() string {
 }
 
 func (p *BedrockServerProperties) Validate() error {
-	e := func(s string, v ...interface{}) error {
-		return fmt.Errorf(s, v...)
-	}
-
 	switch gm := p.Gamemode; gm {
 	case "survival", "creative", "adventure":
 	default:
