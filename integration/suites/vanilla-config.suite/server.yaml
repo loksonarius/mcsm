@@ -9,7 +9,7 @@ run:
 
 configs:
   eula:
-    accepted: false
+    eula: false
   vanilla:
     rcon.port: 42
     gamemode: survival
