@@ -13,7 +13,7 @@ configs:
   eula:
     accepted: false
   vanilla:
-    gamemode: bar
+    gamemode: creative
   spigot:
   bukkit:
     settings:

@@ -12,6 +12,6 @@ configs:
     accepted: false
   vanilla:
     rcon.port: 42
-    gamemode: nap
+    gamemode: survival
     pvp: false
   bedrock:
