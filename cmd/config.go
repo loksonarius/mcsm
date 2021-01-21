@@ -59,7 +59,7 @@ var configCmd = Cmd{
 			return err
 		}
 
-		out, err := json.MarshalIndent(srv.Config(), "", "\t")
+		out, err := json.MarshalIndent(server.GetConfig(srv), "", "\t")
 		if err != nil {
 			return err
 		}

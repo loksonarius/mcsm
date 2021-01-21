@@ -66,7 +66,7 @@ var runCmd = Cmd{
 			return err
 		}
 
-		if err := srv.Configure(); err != nil {
+		if err := server.Configure(srv); err != nil {
 			return err
 		}
 
