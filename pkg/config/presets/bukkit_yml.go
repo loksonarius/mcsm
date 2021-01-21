@@ -31,7 +31,7 @@ type bukkitSpawnLimits struct {
 }
 
 type bukkitChunkGC struct {
-	PeriodInTicks uint
+	PeriodInTicks uint `yaml:"period-in-ticks"`
 }
 
 type bukkitTicksPer struct {

@@ -10,7 +10,7 @@ import (
 
 type EulaTxt struct {
 	// look, honestly, I've no clue /why/ someone would set this to false
-	Accepted bool `properties:"key:eula,default:true"`
+	Accepted bool `properties:"key:accepted,default:true"`
 }
 
 func EulaTxtFromConfig(configs map[string]config.ConfigDict) config.ConfigFile {
