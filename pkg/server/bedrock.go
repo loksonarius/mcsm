@@ -40,6 +40,18 @@ func init() {
 	registerServer(BedrockInstall, NewBedrockServer)
 }
 
+func (bs *BedrockServer) InstallOpts() InstallOpts {
+	return bs.Definition.Install
+}
+
+func (bs *BedrockServer) RuntimeOpts() RuntimeOpts {
+	return bs.Definition.Run
+}
+
+func (bs *BedrockServer) ConfigFiles() []config.ConfigFile {
+	return bs.Configs
+}
+
 func (bs *BedrockServer) Install() error {
 	versions, err := bs.Versions()
 	if err != nil {
@@ -140,20 +152,6 @@ func (bs *BedrockServer) Install() error {
 			if err != nil {
 				return err
 			}
-		}
-	}
-
-	return nil
-}
-
-func (bs *BedrockServer) Config() config.ConfigDict {
-	return condenseConfig(bs.Definition.Install, bs.Definition.Run, bs.Configs)
-}
-
-func (bs *BedrockServer) Configure() error {
-	for _, cfg := range bs.Configs {
-		if err := cfg.Write(); err != nil {
-			return err
 		}
 	}
 
