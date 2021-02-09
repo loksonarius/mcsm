@@ -44,7 +44,7 @@ to the target file.
 
 var installCmd = Cmd{
 	Name:    "install",
-	Summary: "Install the current directory's Minecraft server",
+	Summary: "Install a Minecraft server",
 	Usage:   installUsage,
 	Exec: func(args ...string) error {
 		if len(args) > 1 {

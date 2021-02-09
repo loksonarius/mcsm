@@ -31,6 +31,18 @@ func init() {
 	registerServer(VanillaInstall, NewVanillaServer)
 }
 
+func (vs *VanillaServer) InstallOpts() InstallOpts {
+	return vs.Definition.Install
+}
+
+func (vs *VanillaServer) RuntimeOpts() RuntimeOpts {
+	return vs.Definition.Run
+}
+
+func (vs *VanillaServer) ConfigFiles() []config.ConfigFile {
+	return vs.Configs
+}
+
 func (vs *VanillaServer) Install() error {
 	versions, err := vs.getAvailableVersions()
 	if err != nil {
@@ -59,16 +71,6 @@ func (vs *VanillaServer) Install() error {
 
 	// vanilla doesn't support mods nor plugins, so we're done at this point
 	return downloadFileToPath(versionURL, vs.ServerBinaryPath)
-}
-
-func (vs *VanillaServer) Configure() error {
-	for _, cfg := range vs.Configs {
-		if err := cfg.Write(); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 type vanillaVersionMetadata struct {

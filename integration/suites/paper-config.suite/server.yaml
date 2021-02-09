@@ -11,9 +11,9 @@ run:
 
 configs:
   eula:
-    accepted: false
+    eula: false
   vanilla:
-    gamemode: bar
+    gamemode: creative
   spigot:
   bukkit:
     settings:

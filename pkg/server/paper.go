@@ -35,6 +35,18 @@ func init() {
 	registerServer(PaperInstall, NewPaperServer)
 }
 
+func (ps *PaperServer) InstallOpts() InstallOpts {
+	return ps.Definition.Install
+}
+
+func (ps *PaperServer) RuntimeOpts() RuntimeOpts {
+	return ps.Definition.Run
+}
+
+func (ps *PaperServer) ConfigFiles() []config.ConfigFile {
+	return ps.Configs
+}
+
 func (ps *PaperServer) Install() error {
 	versions, err := ps.Versions()
 	if err != nil {
@@ -71,16 +83,6 @@ func (ps *PaperServer) Install() error {
 
 	for _, source := range ps.Definition.Install.Plugins {
 		source.storeToDirectory(ps.PluginDirectory)
-	}
-
-	return nil
-}
-
-func (ps *PaperServer) Configure() error {
-	for _, cfg := range ps.Configs {
-		if err := cfg.Write(); err != nil {
-			return err
-		}
 	}
 
 	return nil

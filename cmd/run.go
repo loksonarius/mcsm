@@ -44,7 +44,7 @@ The run subcommand relies the following expectations:
 
 var runCmd = Cmd{
 	Name:    "run",
-	Summary: "run the current directory's Minecraft server",
+	Summary: "Start an installed Minecraft server",
 	Usage:   runUsage,
 	Exec: func(args ...string) error {
 		if len(args) > 1 {
@@ -66,7 +66,7 @@ var runCmd = Cmd{
 			return err
 		}
 
-		if err := srv.Configure(); err != nil {
+		if err := server.Configure(srv); err != nil {
 			return err
 		}
 

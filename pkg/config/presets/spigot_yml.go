@@ -166,7 +166,7 @@ type spigotDefault struct {
 	Verbose                         bool                        `yaml:"verbose"`
 	WitherSpawnSoundRadius          uint                        `yaml:"wither-spawn-sound-radius"`
 	EnableZombiePigmenPortalSpawns  bool                        `yaml:"enable-zombie-pigmen-portal-spawns"`
-	ViewDistance                    string                      `yaml:"view-distance"`
+	ViewDistance                    string                      `yaml:"view-distance" validate:"oneof=default 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"` // honestly, this is subtly genius
 	ItemDespawnRate                 uint                        `yaml:"item-despawn-rate"`
 	ArrowDespawnRate                uint                        `yaml:"arrow-despawn-rate"`
 	TridentDespawnRate              uint                        `yaml:"trident-despawn-rate"`
@@ -414,7 +414,7 @@ func (s *SpigotYml) Path() string {
 }
 
 func (s *SpigotYml) Validate() error {
-	return nil
+	return validate.Struct(s)
 }
 func (s *SpigotYml) Render() []byte {
 	out, _ := yaml.Marshal(s)

@@ -8,8 +8,6 @@ run:
   maxmemory: 1G
 
 configs:
-  eula:
-    accepted: true
   vanilla:
     gamemode: creative
     pvp: false

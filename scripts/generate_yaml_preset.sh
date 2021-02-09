@@ -8,5 +8,5 @@ if ! command -v ruby &> /dev/null; then
   echo "Need Ruby installed to run generate script!"
   exit 1
 else
-  ./scripts/generate-yaml-preset.rb "${file}" "${component}"
+  ./scripts/generate_yaml_preset.rb "${file}" "${component}"
 fi

@@ -50,4 +50,4 @@ package: build
 
 # Generate config preset type or value definitions for a yaml config file
 gen-preset file target="type":
-	./scripts/generate-yaml-preset.sh "{{file}}" "{{target}}"
+	./scripts/generate_yaml_preset.sh "{{file}}" "{{target}}"
