@@ -42,7 +42,7 @@ error during download if the URL given requires some extra forwarding to resolve
 to the target file.
 `
 
-var installCmd = Cmd{
+var InstallCmd = Cmd{
 	Name:    "install",
 	Summary: "Install a Minecraft server",
 	Usage:   installUsage,
@@ -71,5 +71,5 @@ var installCmd = Cmd{
 }
 
 func init() {
-	registerSubcommand(installCmd)
+	registerSubcommand(InstallCmd)
 }

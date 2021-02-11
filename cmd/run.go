@@ -42,7 +42,7 @@ The run subcommand relies the following expectations:
   running the Bedrock server's binary on Ubuntu systems
 `
 
-var runCmd = Cmd{
+var RunCmd = Cmd{
 	Name:    "run",
 	Summary: "Start an installed Minecraft server",
 	Usage:   runUsage,
@@ -75,5 +75,5 @@ var runCmd = Cmd{
 }
 
 func init() {
-	registerSubcommand(runCmd)
+	registerSubcommand(RunCmd)
 }

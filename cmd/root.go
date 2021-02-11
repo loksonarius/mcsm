@@ -26,7 +26,7 @@ func printUsageDocs() {
 		)
 	}
 
-	fmt.Printf(USAGE_DOCS, cli, strings.Join(sub_docs, "\n"))
+	Log.Printf(USAGE_DOCS, cli, strings.Join(sub_docs, "\n"))
 }
 
 type Cmd struct {
@@ -64,15 +64,14 @@ func Execute(version, commit string) {
 
 	if command == "" {
 		printUsageDocs()
+		os.Exit(0)
 	}
 
 	if c, ok := commands[command]; ok {
 		if err := c.Exec(args...); err != nil {
-			fmt.Printf("error: %s\n", err)
-			os.Exit(1)
+			Log.Fatalf("error: %s\n", err)
 		}
 	} else {
-		fmt.Printf("%s is not a valid subcommand!\n", command)
-		os.Exit(1)
+		Log.Fatalf("%s is not a valid subcommand!\n", command)
 	}
 }

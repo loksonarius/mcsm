@@ -1,7 +1,5 @@
 package cmd
 
-import "fmt"
-
 var (
 	Version string
 	Commit  string
@@ -17,17 +15,17 @@ commit used to build it.
 Local development builds may have a non-semantic version string of $USER-dev.
 `
 
-var versionCmd = Cmd{
+var VersionCmd = Cmd{
 	Name:    "version",
 	Summary: "Print version info",
 	Usage:   versionUsage,
 	Exec: func(args ...string) error {
-		fmt.Println(Version)
-		fmt.Printf("commit: %s\n", Commit)
+		Log.Println(Version)
+		Log.Printf("commit: %s\n", Commit)
 		return nil
 	},
 }
 
 func init() {
-	registerSubcommand(versionCmd)
+	registerSubcommand(VersionCmd)
 }
