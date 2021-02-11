@@ -224,7 +224,7 @@ func runJavaServer(binaryPath string, runOpts RuntimeOpts) error {
 		return err
 	}
 
-	fmt.Printf("Starting '%s %s'\n", path, strings.Join(args, " "))
+	Log.Printf("Starting '%s %s'\n", path, strings.Join(args, " "))
 	if err := cmd.Start(); err != nil {
 		return err
 	}
