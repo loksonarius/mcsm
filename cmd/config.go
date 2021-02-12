@@ -35,7 +35,7 @@ This subcommand primarily exists to help with testing configuration parsing and
 verifying config values with some other JSON-parsing tooling.
 `
 
-var configCmd = Cmd{
+var ConfigCmd = Cmd{
 	Name:    "config",
 	Summary: "Print a parsed server definition",
 	Usage:   configUsage,
@@ -64,11 +64,11 @@ var configCmd = Cmd{
 			return err
 		}
 
-		fmt.Println(string(out))
+		Log.Println(string(out))
 		return nil
 	},
 }
 
 func init() {
-	registerSubcommand(configCmd)
+	registerSubcommand(ConfigCmd)
 }

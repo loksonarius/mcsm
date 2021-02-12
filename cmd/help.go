@@ -11,7 +11,7 @@ The help subcommand will print out detailed usage information for the given
 subcommand including what arguments the subcommand expects, if any.
 `
 
-var helpCmd = Cmd{
+var HelpCmd = Cmd{
 	Name:    "help",
 	Summary: "Print specifc usage information for a subcommand",
 	Usage:   helpUsage,
@@ -26,7 +26,7 @@ var helpCmd = Cmd{
 		}
 
 		if c, ok := commands[subcommand]; ok {
-			fmt.Printf(c.Usage, cli)
+			Log.Printf(c.Usage, cli)
 		} else {
 			return fmt.Errorf("%s is not a valid subcommand!\n", subcommand)
 		}
@@ -36,5 +36,5 @@ var helpCmd = Cmd{
 }
 
 func init() {
-	registerSubcommand(helpCmd)
+	registerSubcommand(HelpCmd)
 }

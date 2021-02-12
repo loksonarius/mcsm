@@ -23,7 +23,7 @@ will terminate with a non-zero exit code. Otherwise, a confirmation message will
 be printed out and the process will terminate with an exit code of 0.
 `
 
-var validateCmd = Cmd{
+var ValidateCmd = Cmd{
 	Name:    "validate",
 	Summary: "Validate config file values for a server definition",
 	Usage:   validateUsage,
@@ -54,12 +54,13 @@ var validateCmd = Cmd{
 		}
 
 		for _, err := range errs {
-			fmt.Println(err.Error())
+			Log.Println(err.Error())
 		}
+
 		return fmt.Errorf("found %d errors", len(errs))
 	},
 }
 
 func init() {
-	registerSubcommand(validateCmd)
+	registerSubcommand(ValidateCmd)
 }

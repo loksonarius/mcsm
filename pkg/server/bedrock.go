@@ -186,6 +186,6 @@ func (bs *BedrockServer) Run() error {
 	ld_path := filepath.Dir(bs.ServerBinaryPath)
 	env := append(os.Environ(), fmt.Sprintf("LD_LIBRARY_PATH=%s", ld_path))
 
-	fmt.Printf("Starting '%s'\n", bs.ServerBinaryPath)
+	Log.Printf("Starting '%s'\n", bs.ServerBinaryPath)
 	return syscall.Exec(path, args, env)
 }
