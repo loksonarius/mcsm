@@ -1,28 +1,28 @@
 package logging
 
 import (
-	"os"
 	"log"
+	"os"
 )
 
 type Logger struct {
-	Stdout *os.File
-	Stderr *os.File
+	Stdout   *os.File
+	Stderr   *os.File
 	LogLevel LogLevel
-	out *log.Logger
-	err *log.Logger
+	out      *log.Logger
+	err      *log.Logger
 }
 
 func NewLogger(prefix string) Logger {
 	out := log.New(os.Stdout, prefix, 0)
-	err := log.New(os.Stderr, prefix, log.LstdFlags | log.Lshortfile)
+	err := log.New(os.Stderr, prefix, log.LstdFlags|log.Lshortfile)
 
 	return Logger{
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
+		Stdout:   os.Stdout,
+		Stderr:   os.Stderr,
 		LogLevel: globalLogLevel,
-		out: out,
-		err: err,
+		out:      out,
+		err:      err,
 	}
 }
 
