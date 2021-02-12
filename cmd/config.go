@@ -39,9 +39,9 @@ var ConfigCmd = Cmd{
 	Name:    "config",
 	Summary: "Print a parsed server definition",
 	Usage:   configUsage,
-	Exec: func(args ...string) error {
+	Exec: func(args ...string) (string, error) {
 		if len(args) > 1 {
-			return fmt.Errorf("expected only 1 argument")
+			return "", fmt.Errorf("expected only 1 argument")
 		}
 
 		path := "./server.yaml"
@@ -51,21 +51,20 @@ var ConfigCmd = Cmd{
 
 		def, err := server.DefinitionFromPath(path)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		srv, err := server.GetServer(def)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		out, err := json.MarshalIndent(server.GetConfig(srv), "", "\t")
 		if err != nil {
-			return err
+			return "", err
 		}
 
-		Log.Println(string(out))
-		return nil
+		return string(out), nil
 	},
 }
 

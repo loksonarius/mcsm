@@ -15,9 +15,9 @@ var HelpCmd = Cmd{
 	Name:    "help",
 	Summary: "Print specifc usage information for a subcommand",
 	Usage:   helpUsage,
-	Exec: func(args ...string) error {
+	Exec: func(args ...string) (string, error) {
 		if len(args) > 1 {
-			return fmt.Errorf("expected only 1 argument")
+			return "", fmt.Errorf("expected only 1 argument")
 		}
 
 		subcommand := "help"
@@ -26,12 +26,10 @@ var HelpCmd = Cmd{
 		}
 
 		if c, ok := commands[subcommand]; ok {
-			Log.Printf(c.Usage, cli)
+			return fmt.Sprintf(c.Usage, cli), nil
 		} else {
-			return fmt.Errorf("%s is not a valid subcommand!\n", subcommand)
+			return "", fmt.Errorf("%s is not a valid subcommand!\n", subcommand)
 		}
-
-		return nil
 	},
 }
 

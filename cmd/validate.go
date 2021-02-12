@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/loksonarius/mcsm/pkg/server"
 )
@@ -27,9 +28,9 @@ var ValidateCmd = Cmd{
 	Name:    "validate",
 	Summary: "Validate config file values for a server definition",
 	Usage:   validateUsage,
-	Exec: func(args ...string) error {
+	Exec: func(args ...string) (string, error) {
 		if len(args) > 1 {
-			return fmt.Errorf("expected only 1 argument")
+			return "", fmt.Errorf("expected only 1 argument")
 		}
 
 		path := "./server.yaml"
@@ -39,25 +40,25 @@ var ValidateCmd = Cmd{
 
 		def, err := server.DefinitionFromPath(path)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		srv, err := server.GetServer(def)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		errs := server.Validate(srv)
 		if len(errs) == 0 {
-			fmt.Println("no errors found")
-			return nil
+			return "no errors found", nil
 		}
 
+		var out strings.Builder
 		for _, err := range errs {
-			Log.Println(err.Error())
+			out.WriteString(err.Error())
 		}
 
-		return fmt.Errorf("found %d errors", len(errs))
+		return out.String(), fmt.Errorf("found %d errors", len(errs))
 	},
 }
 

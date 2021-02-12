@@ -1,5 +1,9 @@
 package cmd
 
+import (
+	"fmt"
+)
+
 var (
 	Version string
 	Commit  string
@@ -19,10 +23,8 @@ var VersionCmd = Cmd{
 	Name:    "version",
 	Summary: "Print version info",
 	Usage:   versionUsage,
-	Exec: func(args ...string) error {
-		Log.Println(Version)
-		Log.Printf("commit: %s\n", Commit)
-		return nil
+	Exec: func(args ...string) (string, error) {
+		return fmt.Sprintf("%s\ncommit: %s\n", Version, Commit), nil
 	},
 }
 

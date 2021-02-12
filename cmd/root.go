@@ -33,7 +33,7 @@ type Cmd struct {
 	Name    string
 	Summary string
 	Usage   string
-	Exec    func(args ...string) error
+	Exec    func(args ...string) (string, error)
 }
 
 // These config values are initialized in setting.go
@@ -68,7 +68,10 @@ func Execute(version, commit string) {
 	}
 
 	if c, ok := commands[command]; ok {
-		if err := c.Exec(args...); err != nil {
+		out, err := c.Exec(args...)
+
+		Log.Println(out)
+		if err != nil {
 			Log.Fatalf("error: %s\n", err)
 		}
 	} else {

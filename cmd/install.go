@@ -46,9 +46,9 @@ var InstallCmd = Cmd{
 	Name:    "install",
 	Summary: "Install a Minecraft server",
 	Usage:   installUsage,
-	Exec: func(args ...string) error {
+	Exec: func(args ...string) (string, error) {
 		if len(args) > 1 {
-			return fmt.Errorf("expected only 1 argument")
+			return "", fmt.Errorf("expected only 1 argument")
 		}
 
 		path := "./server.yaml"
@@ -58,15 +58,15 @@ var InstallCmd = Cmd{
 
 		def, err := server.DefinitionFromPath(path)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		srv, err := server.GetServer(def)
 		if err != nil {
-			return err
+			return "", err
 		}
 
-		return srv.Install()
+		return "", srv.Install()
 	},
 }
 
