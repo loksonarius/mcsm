@@ -64,7 +64,11 @@ func TestMarshal(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			g := string(Marshal(tc.i))
+			o, err := Marshal(tc.i)
+			if err != nil {
+				t.Errorf("unexpected error unmarshalling: %v", err)
+			}
+			g := string(o)
 			if g != tc.e {
 				t.Errorf("got:\n%s\nexpected:\n%s", g, tc.e)
 			}

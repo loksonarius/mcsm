@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/loksonarius/mcsm/pkg/config"
-	"github.com/loksonarius/mcsm/pkg/config/properties"
+	"github.com/loksonarius/mcsm/pkg/config/types/properties"
 )
 
 type BedrockServerProperties struct {
@@ -56,7 +56,8 @@ func (p *BedrockServerProperties) Validate() error {
 }
 
 func (p *BedrockServerProperties) Render() []byte {
-	return properties.Marshal(p)
+	out, _ := properties.Marshal(p)
+	return out
 }
 
 func (p *BedrockServerProperties) Write() error {

@@ -4,9 +4,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/loksonarius/mcsm/pkg/config"
+	"github.com/loksonarius/mcsm/pkg/config/types/yaml"
 )
 
 type bukkitSettings struct {
@@ -90,12 +89,7 @@ func defaultBukkitYml() BukkitYml {
 func BukkitYmlFromConfig(configs map[string]config.ConfigDict) config.ConfigFile {
 	b := defaultBukkitYml()
 	if c, ok := configs["bukkit"]; ok {
-		marshalled, err := yaml.Marshal(c)
-		if err != nil {
-			return &b
-		}
-
-		if err := yaml.Unmarshal(marshalled, &b); err != nil {
+		if err := yaml.Unmarshal(c, &b); err != nil {
 			b = defaultBukkitYml()
 			return &b
 		}

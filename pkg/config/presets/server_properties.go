@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/loksonarius/mcsm/pkg/config"
-	"github.com/loksonarius/mcsm/pkg/config/properties"
+	"github.com/loksonarius/mcsm/pkg/config/types/properties"
 )
 
 type ServerProperties struct {
@@ -80,7 +80,8 @@ func (p *ServerProperties) Validate() error {
 }
 
 func (p *ServerProperties) Render() []byte {
-	return properties.Marshal(p)
+	out, _ := properties.Marshal(p)
+	return out
 }
 
 func (p *ServerProperties) Write() error {
