@@ -12,8 +12,27 @@ jobs:
           go-version: '1.15.2'
       - run: just test
 
+  list-integration-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        run: |
+          ./integration/suite.sh list | \
+            head -c -1 | \
+            jq -R -s -c 'split("\n")' > suites.json
+          echo "::set-output name=matrix::$(cat suites.json)"
+
   run-integration-tests:
     runs-on: ubuntu-latest
+    needs:
+      - list-integration-tests
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        suite: ${{ fromJSON(needs.list-integration-tests.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v2
       - uses: extractions/setup-just@v1
@@ -25,4 +44,13 @@ jobs:
           java-version: '16'
           java-package: jre
       - run: echo "${GITHUB_WORKSPACE}/build" >> $GITHUB_PATH
-      - run: just integration
+      - run: just integration ${{ matrix.suite }}
+
+  integration-tests-passed:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs:
+      - run-integration-tests
+    steps:
+      - if: ${{ needs.run-integration-tests.result != 'success' }}
+        run: exit 1
