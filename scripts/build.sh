@@ -15,7 +15,7 @@ case "${build_local}" in
   "yes"|"true"|"YES"|"yes please")
     go build \
       -o "${build_dir}/${package_name}-local" \
-      -i -trimpath \
+      -trimpath \
       -ldflags "${version_flags} ${linker_flags}"
   ;;
 
@@ -28,7 +28,7 @@ case "${build_local}" in
       env GOOS="linux" GOARCH="${GOARCH}" \
         go build \
           -o "${output_name}" \
-          -i -trimpath \
+          -trimpath \
           -ldflags "${version_flags} ${linker_flags}"
     done
   ;;
