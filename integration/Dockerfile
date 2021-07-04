@@ -5,7 +5,7 @@ RUN apt-get update && \
   apt-get install -y \
     curl \
     jq \
-    openjdk-11-jre \
+    openjdk-16-jre \
     unzip \
     vim \
     wget \

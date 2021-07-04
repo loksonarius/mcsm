@@ -138,6 +138,12 @@ func (bs *BedrockServer) Install() error {
 			}
 			defer out.Close()
 
+			// bro, who stopped making this thing executable!?
+			if f.Name == "bedrock_server" {
+				const executable_bit = 0111
+				mode = mode | executable_bit
+			}
+
 			if err := out.Chmod(mode); err != nil {
 				return err
 			}

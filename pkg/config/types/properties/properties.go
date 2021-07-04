@@ -10,7 +10,7 @@ import (
 
 const tagName = "properties"
 
-func Marshal(i interface{}) []byte {
+func Marshal(i interface{}) ([]byte, error) {
 	out := ""
 
 	v := reflect.ValueOf(i)
@@ -49,17 +49,17 @@ func Marshal(i interface{}) []byte {
 		out += fmt.Sprintf("%s=%s\n", key, value)
 	}
 
-	return []byte(out)
+	return []byte(out), nil
 }
 
-func Unmarshal(dict config.ConfigDict, target interface{}) {
+func Unmarshal(dict config.ConfigDict, target interface{}) error {
 	v := reflect.ValueOf(target)
 	for v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
 		v = v.Elem()
 	}
 
 	if v.Kind() != reflect.Struct {
-		return
+		return fmt.Errorf("unable to unmarshal non-struct values as properties")
 	}
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
@@ -141,4 +141,6 @@ func Unmarshal(dict config.ConfigDict, target interface{}) {
 			continue
 		}
 	}
+
+	return nil
 }

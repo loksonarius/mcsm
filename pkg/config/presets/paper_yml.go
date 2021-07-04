@@ -4,9 +4,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/loksonarius/mcsm/pkg/config"
+	"github.com/loksonarius/mcsm/pkg/config/types/yaml"
 )
 
 type PaperYmlUnsupportedSettings struct {
@@ -566,12 +565,7 @@ func defaultPaperYml() PaperYml {
 func PaperYmlFromConfig(configs map[string]config.ConfigDict) config.ConfigFile {
 	p := defaultPaperYml()
 	if c, ok := configs["paper"]; ok {
-		marshalled, err := yaml.Marshal(c)
-		if err != nil {
-			return &p
-		}
-
-		if err := yaml.Unmarshal(marshalled, &p); err != nil {
+		if err := yaml.Unmarshal(c, &p); err != nil {
 			p = defaultPaperYml()
 			return &p
 		}

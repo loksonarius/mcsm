@@ -4,9 +4,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/loksonarius/mcsm/pkg/config"
+	"github.com/loksonarius/mcsm/pkg/config/types/yaml"
 )
 
 type spigotMessages struct {
@@ -395,12 +394,7 @@ func defaultSpigotYml() SpigotYml {
 func SpigotYmlFromConfig(configs map[string]config.ConfigDict) config.ConfigFile {
 	s := defaultSpigotYml()
 	if c, ok := configs["spigot"]; ok {
-		marshalled, err := yaml.Marshal(c)
-		if err != nil {
-			return &s
-		}
-
-		if err := yaml.Unmarshal(marshalled, &s); err != nil {
+		if err := yaml.Unmarshal(c, &s); err != nil {
 			s = defaultSpigotYml()
 			return &s
 		}

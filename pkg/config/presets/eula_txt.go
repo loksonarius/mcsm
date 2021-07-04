@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/loksonarius/mcsm/pkg/config"
-	"github.com/loksonarius/mcsm/pkg/config/properties"
+	"github.com/loksonarius/mcsm/pkg/config/types/properties"
 )
 
 type EulaTxt struct {
@@ -34,7 +34,8 @@ func (p *EulaTxt) Validate() error {
 }
 
 func (p *EulaTxt) Render() []byte {
-	return properties.Marshal(p)
+	out, _ := properties.Marshal(p)
+	return out
 }
 
 func (p *EulaTxt) Write() error {
